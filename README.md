@@ -1,4 +1,4 @@
 # sadkat
 ## single-aerosol drying kinetics and trajectories
 
-![The droplets are brought to you by a very sad kitty](https://thypix.com/wp-content/uploads/sad-cat-2.jpg =600x)
+<img alt="The droplets are brought to you by a very sad kitty" src="https://user-images.githubusercontent.com/link-to-your-image.png" width="500" />
