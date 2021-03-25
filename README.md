@@ -17,7 +17,7 @@ Authors:
 * Joshua Robinson (joshua.robinson@bristol.ac.uk)
 * Dan Hardy (dan.hardy@bristol.ac.uk)
 
-Elements of the code were inspired by a numerical model built by Jim Walker (jim.walker@bristol.ac.uk).
+Elements of the code were inspired by an earlier numerical model built by Jim Walker (jim.walker@bristol.ac.uk).
 
 ## Installation instructions
 
