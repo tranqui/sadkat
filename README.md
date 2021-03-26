@@ -27,7 +27,16 @@ TBD.
 
 ### Linux/Mac
 
-TBD.
+Make sure [jupytext](https://jupytext.readthedocs.io/en/latest/install.html) is installed, then run:
+
+    python make.py
+
+inside the source directory. This should generate a notebook `sadkat.ipynb` which can be opened from your browser after launching the jupyter notebook kernel. That is, run:
+
+    jupyter notebook
+
+which should open a new window in your browser. You should then be able to select the new notebook.
+
 
 ## How to use
 
