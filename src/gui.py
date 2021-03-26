@@ -140,6 +140,13 @@ class DropletSimulationGUI:
         self.gas_velocity = widgets.GridBox([self.gas_vx, self.gas_vy, self.gas_vz],
                                              layout=coord_grid_layout)
 
+        self.gx = widgets.FloatText(value=0, step=0.01, description='gx / m/s', layout=coord_layout)
+        self.gy = widgets.FloatText(value=0, step=0.01, description='gy / m/s', layout=coord_layout)
+        self.gz = widgets.FloatText(value=-gravitational_acceleration,
+                                    step=0.01, description='gz / m/s', layout=coord_layout)
+        self.gravity = widgets.GridBox([self.gx, self.gy, self.gz],
+                                       layout=coord_grid_layout)
+
         ## Simulation parameters.
 
         self.time_selection = widgets.BoundedFloatText(
@@ -161,7 +168,6 @@ class DropletSimulationGUI:
             value=1e-3, base=10, min=-8, max=-1, step=1, readout_format='.1g'
         )
 
-        #self.time_choices = widgets.HBox([self.time_selection, self.stop_checkbox, self.stop_threshold_slider])
         self.time_choices = widgets.GridBox([self.time_selection, self.stop_checkbox, self.stop_threshold_slider],
                                              layout=time_grid_layout)
 
@@ -213,6 +219,7 @@ class DropletSimulationGUI:
                 self.ambient_T_slider,
                 self.ambient_RH_slider,
                 self.gas_velocity,
+                self.gravity,
                 self.simulation_label,
                 self.time_choices,
                 self.timestep_slider,
@@ -288,6 +295,7 @@ class DropletSimulationGUI:
             ambient_temperature = self.ambient_T_slider.value,
             ambient_RH = self.ambient_RH_slider.value,
             gas_velocity = np.array((self.gas_vx.value, self.gas_vy.value, self.gas_vz.value)),
+            gravity = np.array((self.gx.value, self.gy.value, self.gz.value)),
 
             # Simulation parameters.
             time = self.time_selection.value,
@@ -298,7 +306,7 @@ class DropletSimulationGUI:
 
     def run(self, solution, density_fit, profile, npoints,
             initial_radius, initial_mfs, initial_temperature, initial_velocity, initial_position,
-            ambient_temperature, ambient_RH, gas_velocity,
+            ambient_temperature, ambient_RH, gas_velocity, gravity,
             time, timestep, terminate_on_equilibration, terminate_threshold):
         """
         Run a new simulation.
@@ -320,6 +328,7 @@ class DropletSimulationGUI:
             ambient_temperature: temperature of surrounding gas in Celsius.
             ambient_RH: relative humidity of surrounding gas, should be between 0 and 1.
             gas_velocity: a 3-dimensional vector specifying the velocity of background gas in metres/second.
+            gravity: a 3-dimensional acceleration vector from body forces (e.g. gravity).
             time: the total time to run the simulation for in seconds.
             timestep: the timestep in the simulation in seconds. A smaller number will make the simulation
                       more accurate, but also take longer. NB: this is technically the *maximum* timestep,
@@ -354,6 +363,7 @@ class DropletSimulationGUI:
         if profile == 'uniform':
             droplet = UniformDroplet.from_mfs(solution,
                                               gas,
+                                              gravity,
                                               initial_radius,
                                               initial_mfs,
                                               initial_temperature,

@@ -6,6 +6,7 @@ from gas import *
 #
 # NB: See the appendix at the bottom of this notebook for the complete set of equations used to describe the droplet.
 
+# +
 @dataclass
 class UniformDroplet:
     """This class completely describes the state of the droplet during its evolution.
@@ -15,6 +16,7 @@ class UniformDroplet:
 
     solution: object
     environment: object
+    gravity: object                 # m/s^2
     mass_solute: float              # kg
     mass_solvent: float             # kg
     temperature: float              # K
@@ -22,13 +24,15 @@ class UniformDroplet:
     position: np.array=np.zeros(3)  # m
 
     @staticmethod
-    def from_mfs(solution, environment, radius, mass_fraction_solute, temperature,
+    def from_mfs(solution, environment, gravity,
+                 radius, mass_fraction_solute, temperature,
                  velocity=np.zeros(3), position=np.zeros(3)):
         """Create a droplet from experimental conditions.
 
         Args:
             solution: parameters describing solvent+solute
             environment: parameters of gas surrounding droplet
+            body acceleration in metres/second^2 (3-dimensional vector)
             radius in metres
             mass_fraction_solute (MFS) (unitless)
             temperature in K
@@ -38,7 +42,7 @@ class UniformDroplet:
         mass = 4*np.pi/3 * radius**3 * solution.density(mass_fraction_solute)
         mass_solvent = (1-mass_fraction_solute) * mass
         mass_solute = mass_fraction_solute * mass
-        return UniformDroplet(solution, environment, mass_solute, mass_solvent, temperature, velocity, position)
+        return UniformDroplet(solution, environment, gravity, mass_solute, mass_solvent, temperature, velocity, position)
 
     @property
     def state(self):
@@ -93,6 +97,9 @@ class UniformDroplet:
                     x=self.position[0],
                     y=self.position[1],
                     z=self.position[2],
+                    gx=self.gravity[0],
+                    gy=self.gravity[1],
+                    gz=self.gravity[2],
                     # I've assumed the user doesn't care about the derivatives, because these can be roughly inferred
                     # from the changes between frames. If more precise information is needed, then uncomment these.
                     #evaporation_rate = self.dmdt,
@@ -251,8 +258,8 @@ class UniformDroplet:
         """Time derivative of velocity, i.e. its acceleration from Newton's second law in m/s^2."""
         rho_p = self.density
         rho_g = self.environment.density
+        g = self.gravity
 
-        g = np.array((0, 0, -gravitational_acceleration))
         buoyancy = 1 - rho_g/rho_p
         acceleration = buoyancy*g
 
@@ -292,7 +299,8 @@ class UniformDroplet:
     @property
     def equilibrium_droplet(self):
         """Final droplet once it has reached equilibrium."""
-        return UniformDroplet(self.solution, self.environment, self.mass_solute, *self.equilibrium_state)
+        return UniformDroplet(self.solution, self.environment, self.gravity,
+                              self.mass_solute, *self.equilibrium_state)
 
     def virtual_droplet(self, x):
         """Create droplet with new state variables.
@@ -303,7 +311,7 @@ class UniformDroplet:
             x: new state variables (cf. Droplet.state function)
         """
         x = (x[0], x[1], x[2:5], x[5:])
-        return UniformDroplet(self.solution, self.environment, self.mass_solute, *x)
+        return UniformDroplet(self.solution, self.environment, self.gravity, self.mass_solute, *x)
 
     def copy(self):
         """Create an identical copy of this droplet."""
@@ -369,4 +377,26 @@ class UniformDroplet:
         variables['time'] = trajectory.t
 
         return pd.DataFrame(variables)
+# -
 
+# + [ignore]="True"
+if __name__ == '__main__':
+    ambient_temperature = 293
+    ambient_RH = 0.5
+    gas = Atmosphere(ambient_temperature, ambient_RH)
+
+    gravity = np.zeros(3)
+    initial_radius = 30e-6
+    initial_mfs = 0.2
+    initial_temperature = 293
+    initial_velocity = np.zeros(3)
+    initial_position = np.zeros(3)
+    droplet = UniformDroplet.from_mfs(solution,
+                                      gas,
+                                      gravity,
+                                      initial_radius,
+                                      initial_mfs,
+                                      initial_temperature,
+                                      initial_velocity,
+                                      initial_position)
+# -
