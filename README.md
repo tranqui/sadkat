@@ -1,4 +1,4 @@
-# sadkat: single-aerosol drying kinetics and trajectories
+# SADKAT: single-aerosol drying kinetics and trajectories
 **A python package to model aerosol drying, brought to you by this cat's tears.**
 
 <img alt="The droplets are brought to you by a very sad kitty" src="https://thypix.com/wp-content/uploads/sad-cat-2.jpg" width="300" />
@@ -16,8 +16,8 @@ This package implements a widely used theoretical model for aerosol drying descr
 during the Transport of Exhaled Aerosols and Droplets", ACS Cent. Sci.(7), 200-209 (2021). DOI: [10.1021/acscentsci.0c01522](https://doi.org/10.1021/acscentsci.0c01522).
 
 Authors:
-* Joshua Robinson (joshua.robinson@bristol.ac.uk)
-* Dan Hardy (dan.hardy@bristol.ac.uk)
+* Joshua Robinson ([joshua.robinson@bristol.ac.uk](mailto:joshua.robinson@bristol.ac.uk))
+* Dan Hardy ([dan.hardy@bristol.ac.uk](mailto:dan.hardy@bristol.ac.uk))
 
 Elements of the code were inspired by an earlier numerical model built by Jim Walker (jim.walker@bristol.ac.uk).
 
@@ -37,7 +37,7 @@ If you have the python package manager [pip](https://pypi.org/project/pip/) inst
 
     pip install numpy scipy matplotlib
 
-on the command line. Note this command may require administrator privileges or to be run with the `--user` flag.
+on the command line. Note this command may require administrator privileges or you must pass the additional `--user` flag.
 Alternatively, these packages are frequently bundled with scientific distributions of python, e.g. [anaconda](https://www.anaconda.com/).
 
 ### Windows
