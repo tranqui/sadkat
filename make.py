@@ -2,7 +2,13 @@
 
 # Merge all the source files into one single document for the notebook.
 
-files = ['src/sadkat.py', 'src/droplet.py', 'src/gui.py']
+files = ['src/preamble.py',
+         'src/solvents.py',
+         'src/solutes.py',
+         'src/gas.py',
+         'src/droplet.py',
+         'src/gui.py',
+         'src/equations.py']
 source = []
 for path in files:
     with open(path) as f:

@@ -1,4 +1,4 @@
-# # 2. Defining the droplet and its evolution
+# # 3. Defining the droplet and its evolution
 #
 # NB: See the appendix at the bottom of this notebook for the complete set of equations used to describe the droplet.
 
