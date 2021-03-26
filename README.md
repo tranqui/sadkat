@@ -1,5 +1,5 @@
 # sadkat: single-aerosol drying kinetics and trajectories
-**A python package to model aerosol drying.**
+**A python package to model aerosol drying, brought to you by this cat's tears.**
 
 <img alt="The droplets are brought to you by a very sad kitty" src="https://thypix.com/wp-content/uploads/sad-cat-2.jpg" width="300" />
 
