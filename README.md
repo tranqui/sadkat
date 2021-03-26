@@ -23,17 +23,34 @@ Elements of the code were inspired by an earlier numerical model built by Jim Wa
 
 ## Installation instructions
 
+### Prerequisites
+
+This software requires the following packages:
+
+* [python3](https://www.python.org/downloads/), and the following packages: [numpy](https://numpy.org/), [scipy](https://scipy.org/) and [matplotlib](https://matplotlib.org/)
+* [jupyter notebook](https://jupyter.org/)
+* [jupytext](https://jupytext.readthedocs.io/en/latest/install.html)
+
+Make sure these are installed before proceeding.
+
+If you have the python package manager [pip](https://pypi.org/project/pip/) installed, then you can install the prerequisite python libraries via:
+
+    pip install numpy scipy matplotlib
+
+on the command line. Note this command may require administrator privileges or to be run with the `--user` flag.
+Alternatively, these packages are frequently bundled with scientific distributions of python, e.g. [anaconda](https://www.anaconda.com/).
+
 ### Windows
 
 TBD.
 
-### Linux/Mac
+### Linux/Mac OS X
 
-Make sure [jupytext](https://jupytext.readthedocs.io/en/latest/install.html) is installed, then run:
+Inside the source directory run:
 
     python make.py
 
-inside the source directory. This should generate a notebook `sadkat.ipynb` which can be opened from your browser after launching the jupyter notebook kernel. That is, run:
+This should generate a notebook `sadkat.ipynb` which can be opened from your browser after launching the jupyter notebook kernel. That is, run:
 
     jupyter notebook
 
