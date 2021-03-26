@@ -10,8 +10,10 @@ This is a software package designed to model the kinetics of aerosols under vari
 This is not intended as a black box: we tried to keep the python code as simple as possible so the user can see how the model is implemented. No knowledge of python is needed to actually use the model through the GUI, however with a little python experience it _should_ be straightforward to extend the model (by e.g. introducing new solutions) or automate running simulations over a range of conditions.
 
 This package implements a standard theoretical model of aerosol drying described in the following literature: 
-* Xie _et al_, "How far droplets can move in indoor environments - revisiting the Wells evaporation-falling curve", Indoor Air 17(3), 211-225 (2007). DOI: 10.1111/j.1600-0668.2007.00469.x
-* Liu _et al_, "Evaporation and dispersion of respiratory droplets from coughing", Indoor Air 27(1), 179-180 (2017). DOI: 10.1111/ina.12297
+* Xie, X. _et al_, "How far droplets can move in indoor environments - revisiting the Wells evaporation-falling curve", Indoor Air 17(3), 211-225 (2007). DOI: [10.1111/j.1600-0668.2007.00469.x](https://doi.org/10.1111/j.1600-0668.2007.00469.x).
+* Liu, L. _et al_, "Evaporation and dispersion of respiratory droplets from coughing", Indoor Air 27(1), 179-180 (2017). DOI: [10.1111/ina.12297](https://doi.org/10.1111/ina.12297).
+* Walker, J. S. _et al_, "Accurate Representations of the Microphysical Processes Occurring
+during the Transport of Exhaled Aerosols and Droplets", ACS Cent. Sci.(7), 200-209 (2021). DOI: [10.1021/acscentsci.0c01522](https://doi.org/10.1021/acscentsci.0c01522).
 
 Authors:
 * Joshua Robinson (joshua.robinson@bristol.ac.uk)
