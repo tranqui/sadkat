@@ -1,3 +1,7 @@
+# + ignore="True"
+from solvents import *
+# -
+
 # ## 2.2. Solutes
 #
 # Parameterising solvent activity in terms of mass fraction of solute, and its inverse. We define the ideal case (i.e. applying Raoult's law for a mixture) and two methods of parameterising the fits in the non-ideal case:
@@ -86,34 +90,31 @@ class MfsVsActivityParameterisation:
         """
         self.mass_fraction_solute_from_solvent_activity = np.poly1d(np.flipud(coefficients))
         self.solvent_activity_from_mass_fraction_solute = np.vectorize(lambda aw: invert_fit(aw, self.mass_fraction_solute_from_solvent_activity))
-
-
 # -
 
 # Check the fit inversions in each kind of parameterisations are working correctly. That is, if we have a parameterisation from mfs -> activity, then this should be consistent with the inverse mapping activity -> mfs. In each plot below the regular and inverted fits should overlap:
 
 # +
-# Dummy parameters for the fits.
-forward_fit = ActivityVsMfsParameterisation([1, -1, 1, -1])
-backward_fit = MfsVsActivityParameterisation([1, -1, 1, -1])
+if __name__ == '__main__':
+    # Dummy parameters for the fits.
+    forward_fit = ActivityVsMfsParameterisation([1, -1, 1, -1])
+    backward_fit = MfsVsActivityParameterisation([1, -1, 1, -1])
 
-mfs = np.linspace(0, 1, 100)
-aw = np.linspace(0, 1, 100)
+    mfs = np.linspace(0, 1, 100)
+    aw = np.linspace(0, 1, 100)
 
-fig, (ax1, ax2) = plt.subplots(ncols=2)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
-ax1.plot(mfs, forward_fit.solvent_activity_from_mass_fraction_solute(mfs), label='regular fit')
-ax1.plot(forward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, label='inverted fit')
-ax1.legend(loc='best')
-ax1.set_title('forward parameterisation')
+    ax1.plot(mfs, forward_fit.solvent_activity_from_mass_fraction_solute(mfs), label='regular fit')
+    ax1.plot(forward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, label='inverted fit')
+    ax1.legend(loc='best')
+    ax1.set_title('forward parameterisation')
 
-ax2.plot(backward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, label='regular fit')
-ax2.plot(mfs, backward_fit.solvent_activity_from_mass_fraction_solute(mfs), label='inverted fit')
-ax2.legend(loc='best')
-ax2.set_title('backward parameterisation')
-plt.show()
-
-
+    ax2.plot(backward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, label='regular fit')
+    ax2.plot(mfs, backward_fit.solvent_activity_from_mass_fraction_solute(mfs), label='inverted fit')
+    ax2.legend(loc='best')
+    ax2.set_title('backward parameterisation')
+    plt.show()
 # -
 
 # Data structures for parameterising solutes:
@@ -267,31 +268,30 @@ for label, solution in all_solutions.items():
 # Sanity check the parameterisations of the solutions by plotting some of their properties below:
 
 # +
-mfs = np.linspace(0, 1, 100)
-fig, (ax1, ax2) = plt.subplots(ncols=2)
+if __name__ == '__main__':
+    mfs = np.linspace(0, 1, 100)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
-for label, solute in all_solutions.items():
-    additive_solute = all_solutions_volume_additivity[label]
+    for label, solute in all_solutions.items():
+        additive_solute = all_solutions_volume_additivity[label]
 
-    pl, = ax1.plot(mfs, solute.density(mfs), label=label)
-    ax1.plot(mfs, additive_solute.density(mfs), '--', c=pl.get_color(), label=('%s (volume additivity)' % label))
-    ax1.plot(1, solute.solid_density, 'o', mfc='None', c=pl.get_color())
+        pl, = ax1.plot(mfs, solute.density(mfs), label=label)
+        ax1.plot(mfs, additive_solute.density(mfs), '--', c=pl.get_color(), label=('%s (volume additivity)' % label))
+        ax1.plot(1, solute.solid_density, 'o', mfc='None', c=pl.get_color())
 
-ax1.set_xlabel('MFS')
-ax1.set_ylabel('density (kg/m$^3$)')
-ax1.legend(loc='best')
+    ax1.set_xlabel('MFS')
+    ax1.set_ylabel('density (kg/m$^3$)')
+    ax1.legend(loc='best')
 
-aw = np.linspace(0, 1, 100)
-for label, solute in all_solutions.items():
-    pl, = ax2.plot(mfs, solute.solvent_activity(mfs), label=label)
-    ax2.plot(solute.mass_fraction_solute_from_solvent_activity(aw), aw, '--', c=pl.get_color(), label=('%s (inverted fit)' % label))
+    aw = np.linspace(0, 1, 100)
+    for label, solute in all_solutions.items():
+        pl, = ax2.plot(mfs, solute.solvent_activity(mfs), label=label)
+        ax2.plot(solute.mass_fraction_solute_from_solvent_activity(aw), aw, '--', c=pl.get_color(), label=('%s (inverted fit)' % label))
 
-ax2.set_xlabel('MFS')
-ax2.set_ylabel('solvent activity')
-ax2.legend(loc='best')
+    ax2.set_xlabel('MFS')
+    ax2.set_ylabel('solvent activity')
+    ax2.legend(loc='best')
 
-plt.show()
-
-
+    plt.show()
 # -
 

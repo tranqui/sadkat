@@ -1,3 +1,7 @@
+# + ignore="True"
+from preamble import *
+# -
+
 # # 2. Physical parameters entering model
 
 # ## 2.1 Solvents
@@ -96,28 +100,27 @@ Water = Solvent(molar_mass_water,
 # Sanity check the water properties by plotting them below:
 
 # +
-T_C = np.linspace(0, 100, 101)
-fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(ncols=2, nrows=2)
+if __name__ == '__main__':
+    T_C = np.linspace(0, 100, 101)
+    fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(ncols=2, nrows=2)
 
-ax1.plot(T_C, Water.density(T_C + T_freezing))
-ax1.set_xlabel('T (℃)')
-ax1.set_ylabel('density (kg/m3)')
+    ax1.plot(T_C, Water.density(T_C + T_freezing))
+    ax1.set_xlabel('T (℃)')
+    ax1.set_ylabel('density (kg/m3)')
 
-ax2.plot(T_C, 1e-3 * Water.specific_latent_heat_vaporisation(T_C + T_freezing))
-ax2.axhline(y=2264.705, ls='dashed')
-ax2.set_xlabel('T (℃)')
-ax2.set_ylabel('L (kJ/kg)')
+    ax2.plot(T_C, 1e-3 * Water.specific_latent_heat_vaporisation(T_C + T_freezing))
+    ax2.axhline(y=2264.705, ls='dashed')
+    ax2.set_xlabel('T (℃)')
+    ax2.set_ylabel('L (kJ/kg)')
 
-ax3.plot(T_C, Water.equilibrium_vapour_pressure(T_C+T_freezing))
-ax3.set_xlabel('T (℃)')
-ax3.set_ylabel('equilibrium vapour pressure (Pa)')
+    ax3.plot(T_C, Water.equilibrium_vapour_pressure(T_C+T_freezing))
+    ax3.set_xlabel('T (℃)')
+    ax3.set_ylabel('equilibrium\nvapour pressure (Pa)')
 
-ax4.plot(T_C, Water.vapour_binary_diffusion_coefficient(T_C+T_freezing))
-ax4.set_xlabel('T (℃)')
-ax4.set_ylabel('$D_\infty$ (m$^2$/s)')
+    ax4.plot(T_C, Water.vapour_binary_diffusion_coefficient(T_C+T_freezing))
+    ax4.set_xlabel('T (℃)')
+    ax4.set_ylabel('$D_\infty$ (m$^2$/s)')
 
-plt.show()
-
-
+    plt.show()
 # -
 

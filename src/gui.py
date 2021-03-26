@@ -1,3 +1,7 @@
+# + ignore="True"
+from droplet import *
+# -
+
 # # 4. Running the simulation
 
 # ## 4.1. Define the Graphical User Interface (GUI) for specifying droplet simulations
@@ -619,12 +623,12 @@ class DropletSimulationGUI:
         self.trajectories = []
         for tab in self.tabs.values():
             tab.children = []
-
-
 # -
 
 # ## 4.2. Executing the graphical program to run simulations
 
-gui = DropletSimulationGUI()
-gui.display()
-
+# +
+if __name__ == '__main__':
+    gui = DropletSimulationGUI()
+    gui.display()
+# -

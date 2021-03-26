@@ -26,7 +26,5 @@ stefan_boltzmann_constant = 5.670374419e-8  # W/m^2/K^4
 molar_mass_dry_air = 28.9647                # g/mol
 
 gravitational_acceleration = 9.80665        # m/s^2
-
-
 # -
 

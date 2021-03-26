@@ -1,3 +1,7 @@
+# + ignore="True"
+from solutes import *
+# -
+
 # ## 2.3. Environmental Conditions
 #
 # Data structures for describing the environment (i.e. the gas phase surrounding the droplet):
@@ -74,32 +78,31 @@ def Atmosphere(temperature,
 # Sanity check parameterisations of Earth's atmosphere by plotting key quantities below:
 
 # +
-T_C = np.linspace(0, 100, 101)
-fig, (ax1, ax2) = plt.subplots(ncols=2)
+if __name__ == '__main__':
+    T_C = np.linspace(0, 100, 101)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
-first = True
-for RH in np.linspace(0, 1, 6):
-    label=('%.1f' % RH)
-    if first:
-        label = 'RH=%s' % label
-        first = False
+    first = True
+    for RH in np.linspace(0, 1, 6):
+        label=('%.1f' % RH)
+        if first:
+            label = 'RH=%s' % label
+            first = False
 
-    rho = [Atmosphere(T+T_freezing, RH).density for T in T_C]
-    ax1.plot(T_C, rho, label=label)
+        rho = [Atmosphere(T+T_freezing, RH).density for T in T_C]
+        ax1.plot(T_C, rho, label=label)
 
-ax1.legend(loc='best')
-ax1.set_xlabel('T (℃)')
-ax1.set_ylabel('density of air (kg/m$^3$)')
+    ax1.legend(loc='best')
+    ax1.set_xlabel('T (℃)')
+    ax1.set_ylabel('density of air (kg/m$^3$)')
 
-T = np.linspace(150, 1400, 1401)
-ax2.plot(T, 1e3*thermal_conductivity_air(T))
-ax2.set_xlim([0, 1400])
-ax2.set_ylim([0, 100])
-ax2.set_xlabel('T (K)')
-ax2.set_ylabel('thermal conductivity of air (mW/m/K)')
+    T = np.linspace(150, 1400, 1401)
+    ax2.plot(T, 1e3*thermal_conductivity_air(T))
+    ax2.set_xlim([0, 1400])
+    ax2.set_ylim([0, 100])
+    ax2.set_xlabel('T (K)')
+    ax2.set_ylabel('thermal conductivity of air (mW/m/K)')
 
-plt.show()
-
-
+    plt.show()
 # -
 
