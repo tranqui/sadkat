@@ -140,10 +140,10 @@ class DropletSimulationGUI:
         self.gas_velocity = widgets.GridBox([self.gas_vx, self.gas_vy, self.gas_vz],
                                              layout=coord_grid_layout)
 
-        self.gx = widgets.FloatText(value=0, step=0.01, description='gx / m/s', layout=coord_layout)
-        self.gy = widgets.FloatText(value=0, step=0.01, description='gy / m/s', layout=coord_layout)
+        self.gx = widgets.FloatText(value=0, step=0.1, description='gx / m/s', layout=coord_layout)
+        self.gy = widgets.FloatText(value=0, step=0.1, description='gy / m/s', layout=coord_layout)
         self.gz = widgets.FloatText(value=-gravitational_acceleration,
-                                    step=0.01, description='gz / m/s', layout=coord_layout)
+                                    step=0.1, description='gz / m/s', layout=coord_layout)
         self.gravity = widgets.GridBox([self.gx, self.gy, self.gz],
                                        layout=coord_grid_layout)
 
