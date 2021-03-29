@@ -6,6 +6,8 @@ from gas import *
 #
 # NB: See the appendix at the bottom of this notebook for the complete set of equations used to describe the droplet.
 
+# # 3.1. Definition
+
 # +
 @dataclass
 class UniformDroplet:
@@ -379,18 +381,23 @@ class UniformDroplet:
         return pd.DataFrame(variables)
 # -
 
-# + [ignore]="True"
+# # 3.2. Example: running a droplet simulation from raw python code
+# This is a minimal working example of how you might use the previously defined class to run a simulation. You can modify this example to e.g. create scripts to automatically run simulations over varying conditions.
+
+# +
 if __name__ == '__main__':
-    ambient_temperature = 293
-    ambient_RH = 0.5
+    solution = aqueous_NaCl
+
+    ambient_temperature = 293 # Kelvin
+    ambient_RH = 0.1
     gas = Atmosphere(ambient_temperature, ambient_RH)
 
-    gravity = np.zeros(3)
-    initial_radius = 30e-6
+    gravity = np.zeros(3) # ignore body forces like gravity (representing e.g. EDB setups)
+    initial_radius = 30e-6 # metres
     initial_mfs = 0.2
-    initial_temperature = 293
-    initial_velocity = np.zeros(3)
-    initial_position = np.zeros(3)
+    initial_temperature = 293 # kelvin
+    initial_velocity = np.zeros(3) # metres/second
+    initial_position = np.zeros(3) # metres/second
     droplet = UniformDroplet.from_mfs(solution,
                                       gas,
                                       gravity,
@@ -399,4 +406,15 @@ if __name__ == '__main__':
                                       initial_temperature,
                                       initial_velocity,
                                       initial_position)
+
+    time = 100 # seconds
+    timestep = 1e-2 # seconds
+    trajectory = droplet.integrate(time, timestep, terminate_on_equilibration=True)
+    # Obtain a table giving a history of *all* droplet parameters.
+    history = droplet.complete_trajectory(trajectory)
+
+    plt.plot(history['time'], history['radius'])
+    plt.xlabel('time / s')
+    plt.ylabel('radius / m')
+    plt.show()
 # -
