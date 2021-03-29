@@ -164,9 +164,41 @@ class UniformDroplet:
         return np.linalg.norm(self.velocity)
 
     @property
+    def jet_velocity(self):
+
+        jet_initial_velocity = np.array([1,0,0]) * self.jet_initial_speed
+        
+        
+        jet_dispersion_distance = 6.8 #assuming 6.8 from Xie paper   
+        jet_centreline_speed = (jet_initial_speed * jet_dispersion_distance) / (self.position[0] / self.aperture_diameter) 
+        
+        jet_radial_velocity = 1
+        jet_axial_velocity = 1
+        
+        theta = np.arctan2(self.position[2], self.position[0])
+        r = np.linalg.norm(self.position)
+        jet_velocity = np.array([1,
+                                 0,
+                                 3])
+        
+        
+        jet_centreline_temperature = self.environment.temperature + (self.jet_initial_temperature - self.environment.temperature) *
+        
+                                    (5 / s_bar) * np.sqrt(self.jet_initial_temperature / self.environment.temperature)
+        
+        
+        #This assumes that the closest point on the centreline wil be vertically above or below the droplet 
+        jet_centreline_position = np.array([self.position[0], 0
+                                            np.sqrt(self.aperture_area ) * 0.0354 * self.jet_archimedes_number * 
+                                            (self.position[0] / np.sqrt(self.aperture_area) ) ** 3 *
+                                            np.sqrt(self.jet_initial_temperature / self.environment.temperature) ])
+        return 0
+
+    @property
     def relative_velocity(self):
         """Velocity relative to environment in metres/second."""
-        return self.velocity - self.environment.velocity
+        #return self.velocity - self.environment.velocity
+        return self.velocity - self.jet.velocity
 
     @property
     def relative_speed(self):
@@ -180,6 +212,32 @@ class UniformDroplet:
         if Re > 1000: return 0.424
         elif Re < 1e-12: return np.inf
         else: return (24 / Re) * (1 + Re**(2/3) / 6)
+        
+        
+    @property
+    def aperture_diameter(self):
+        """"meters"""
+        return 0.02
+
+    @property
+    def aperture_area(self):
+        """"m^2"""
+        return self.aperture_diameter ** 2
+                
+    @property
+    def jet_initial_temperature(self):
+        return body_temperature
+    
+    @property
+    def jet_initial_speed(self):
+        return 1
+    
+    @property
+    def jet_archimedes_number(self):
+        """""""
+        return np.linalg.norm(self.gravity) * np.sqrt(aperture_area) * volumetric_expansion_coeffcient * 
+                                    (self.jet_initial_temperature - self.environment.temperature) * / self.jet_initial_speed ** 2
+
 
     @property
     def reynolds_number(self):
