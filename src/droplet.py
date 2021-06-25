@@ -291,8 +291,9 @@ class UniformDroplet:
 
         I = np.log((self.environment.pressure - self.vapour_pressure) /
                    (self.environment.pressure - self.environment.vapour_pressure))
-        return 4*np.pi*self.radius * self.environment.density * D_eff * Sh * I
-
+        
+        return 4*np.pi*self.radius * self.environment.density * (self.solution.solvent.molar_mass / self.environment.molar_mass) * D_eff * Sh * I
+    
     @property
     def dTdt(self):
         """Time derivative of temperature from heat flux at the surface in K/s."""
