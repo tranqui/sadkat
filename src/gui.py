@@ -642,3 +642,88 @@ if __name__ == '__main__':
     gui = DropletSimulationGUI()
     gui.display()
 # -
+
+# # 4.3 Iterating over input parameters
+
+# +
+
+
+def simulate(time, timestep,
+             solution, ambient_temperature, ambient_RH,
+             initial_radius, initial_temperature, initial_mfs,
+             initial_velocity = np.zeros(3), # metres/second
+             initial_position = np.zeros(3), # metres/second
+             gravity = np.zeros(3)):
+
+    gas = Atmosphere(ambient_temperature, ambient_RH)
+    droplet = UniformDroplet.from_mfs(solution,
+                                      gas,
+                                      gravity,
+                                      initial_radius,
+                                      initial_mfs,
+                                      initial_temperature,
+                                      initial_velocity,
+                                      initial_position)
+    trajectory = droplet.integrate(time, timestep, terminate_on_equilibration=True, eps = 0.001)
+
+    return droplet, trajectory
+
+
+# -
+
+# +
+
+R0 = 25e-6 # metres
+T = 293.15 # Kelvin
+mfs = 0
+
+time = 25 # seconds
+timestep = 0.1 # seconds
+
+history_list = []
+
+RH_range = np.sqrt(np.linspace(0,100**2, 100)) / 100 #np.arange(0,1.001,0.1)
+
+for RH in RH_range:
+    
+    droplet, trajectory = simulate(time, timestep, solution, T, RH, R0, T, mfs)
+    
+    # Obtain a table giving a history of *all* droplet parameters.
+    history = droplet.complete_trajectory(trajectory)
+    history_list.append(history)
+
+RH = 0.9
+specific_droplet, specific_trajectory = simulate(time, timestep, solution, T, RH, R0, T, mfs)
+
+
+# -
+
+# +
+
+
+import matplotlib as mpl
+cmap = mpl.cm.cool_r
+norm = mpl.colors.Normalize(vmin=100 * RH_range.min(), vmax=100 * RH_range.max())
+
+colors = plt.cm.cool_r(RH_range)
+
+for history, RH, color in zip(history_list, RH_range, colors):
+    
+    
+    plt.plot(history['time'], history['radius'] / 1e-6, c = color)
+    
+
+RH = 0.9
+trajectory = specific_droplet.complete_trajectory(specific_trajectory)
+plt.plot(trajectory['time'], trajectory['radius'] / 1e-6, '--', label = 100 * RH)
+    
+plt.xlabel('Time / s')
+plt.ylabel('Radius / µm')
+plt.hlines((0,25),0,25,'k')
+
+
+plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
+plt.legend()
+plt.show()
+
+# -
