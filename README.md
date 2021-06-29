@@ -35,7 +35,7 @@ Make sure these are installed before proceeding.
 
 If you have the python package manager [pip](https://pypi.org/project/pip/) installed, then you can install the prerequisite python libraries via:
 
-    pip install numpy scipy matplotlib
+    pip install numpy scipy matplotlib jupytext
 
 on the command line. Note this command may require administrator privileges or you must pass the additional `--user` flag.
 Alternatively, these packages are frequently bundled with scientific distributions of python, e.g. [anaconda](https://www.anaconda.com/).
