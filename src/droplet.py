@@ -6,6 +6,8 @@ from gas import *
 #
 # NB: See the appendix at the bottom of this notebook for the complete set of equations used to describe the droplet.
 
+# # 3.1. Definition
+
 # +
 @dataclass
 class UniformDroplet:
@@ -162,9 +164,41 @@ class UniformDroplet:
         return np.linalg.norm(self.velocity)
 
     @property
+    def jet_velocity(self):
+
+        jet_initial_velocity = np.array([1,0,0]) * self.jet_initial_speed
+        
+        
+        jet_dispersion_distance = 6.8 #assuming 6.8 from Xie paper   
+        jet_centreline_speed = (jet_initial_speed * jet_dispersion_distance) / (self.position[0] / self.aperture_diameter) 
+        
+        jet_radial_velocity = 1
+        jet_axial_velocity = 1
+        
+        theta = np.arctan2(self.position[2], self.position[0])
+        r = np.linalg.norm(self.position)
+        jet_velocity = np.array([1,
+                                 0,
+                                 3])
+        
+        
+        jet_centreline_temperature = self.environment.temperature + (self.jet_initial_temperature - self.environment.temperature) *
+        
+                                    (5 / s_bar) * np.sqrt(self.jet_initial_temperature / self.environment.temperature)
+        
+        
+        #This assumes that the closest point on the centreline wil be vertically above or below the droplet 
+        jet_centreline_position = np.array([self.position[0], 0
+                                            np.sqrt(self.aperture_area ) * 0.0354 * self.jet_archimedes_number * 
+                                            (self.position[0] / np.sqrt(self.aperture_area) ) ** 3 *
+                                            np.sqrt(self.jet_initial_temperature / self.environment.temperature) ])
+        return 0
+
+    @property
     def relative_velocity(self):
         """Velocity relative to environment in metres/second."""
-        return self.velocity - self.environment.velocity
+        #return self.velocity - self.environment.velocity
+        return self.velocity - self.jet.velocity
 
     @property
     def relative_speed(self):
@@ -178,6 +212,32 @@ class UniformDroplet:
         if Re > 1000: return 0.424
         elif Re < 1e-12: return np.inf
         else: return (24 / Re) * (1 + Re**(2/3) / 6)
+        
+        
+    @property
+    def aperture_diameter(self):
+        """"meters"""
+        return 0.02
+
+    @property
+    def aperture_area(self):
+        """"m^2"""
+        return self.aperture_diameter ** 2
+                
+    @property
+    def jet_initial_temperature(self):
+        return body_temperature
+    
+    @property
+    def jet_initial_speed(self):
+        return 1
+    
+    @property
+    def jet_archimedes_number(self):
+        """""""
+        return np.linalg.norm(self.gravity) * np.sqrt(aperture_area) * volumetric_expansion_coeffcient * 
+                                    (self.jet_initial_temperature - self.environment.temperature) * / self.jet_initial_speed ** 2
+
 
     @property
     def reynolds_number(self):
@@ -231,8 +291,9 @@ class UniformDroplet:
 
         I = np.log((self.environment.pressure - self.vapour_pressure) /
                    (self.environment.pressure - self.environment.vapour_pressure))
-        return 4*np.pi*self.radius * self.environment.density * D_eff * Sh * I
-
+        
+        return 4*np.pi*self.radius * self.environment.density * (self.solution.solvent.molar_mass / self.environment.molar_mass) * D_eff * Sh * I
+    
     @property
     def dTdt(self):
         """Time derivative of temperature from heat flux at the surface in K/s."""
@@ -379,18 +440,23 @@ class UniformDroplet:
         return pd.DataFrame(variables)
 # -
 
-# + [ignore]="True"
+# # 3.2. Example: running a droplet simulation from raw python code
+# This is a minimal working example of how you might use the previously defined class to run a simulation. You can modify this example to e.g. create scripts to automatically run simulations over varying conditions.
+
+# +
 if __name__ == '__main__':
-    ambient_temperature = 293
-    ambient_RH = 0.5
+    solution = aqueous_NaCl
+
+    ambient_temperature = 293 # Kelvin
+    ambient_RH = 0.1
     gas = Atmosphere(ambient_temperature, ambient_RH)
 
-    gravity = np.zeros(3)
-    initial_radius = 30e-6
+    gravity = np.zeros(3) # ignore body forces like gravity (representing e.g. EDB setups)
+    initial_radius = 30e-6 # metres
     initial_mfs = 0.2
-    initial_temperature = 293
-    initial_velocity = np.zeros(3)
-    initial_position = np.zeros(3)
+    initial_temperature = 293 # kelvin
+    initial_velocity = np.zeros(3) # metres/second
+    initial_position = np.zeros(3) # metres/second
     droplet = UniformDroplet.from_mfs(solution,
                                       gas,
                                       gravity,
@@ -399,4 +465,15 @@ if __name__ == '__main__':
                                       initial_temperature,
                                       initial_velocity,
                                       initial_position)
+
+    time = 100 # seconds
+    timestep = 1e-2 # seconds
+    trajectory = droplet.integrate(time, timestep, terminate_on_equilibration=True)
+    # Obtain a table giving a history of *all* droplet parameters.
+    history = droplet.complete_trajectory(trajectory)
+
+    plt.plot(history['time'], history['radius'])
+    plt.xlabel('time / s')
+    plt.ylabel('radius / m')
+    plt.show()
 # -

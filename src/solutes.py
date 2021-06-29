@@ -251,9 +251,24 @@ aqueous_DLF  = Solution(Water,  1.00, 2, 1.0, 1700,
 aqueous_AS   = Solution(Water,  1.00, 2, 1.0, 1200,
                         DensityVsMassFractionFit([997   , -43.88148,  397.75347,  -100.99474,    0      ,    0]))
 
+#dummy solute properties - USE ONLY AS PURE SOLVENT - mfs = 0
+ethanolic_NaCl = Solution(Ethanol, 58.44, 2, 0.3, 2170,
+                        DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
+
+#dummy solute properties - USE ONLY AS PURE SOLVENT
+propanolic_NaCl = Solution(Propanol, 58.44, 2, 0.3, 2170,
+                        DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
+
+#dummy solute properties - USE ONLY AS PURE SOLVENT
+butanolic_NaCl = Solution(Butanol, 58.44, 2, 0.3, 2170,
+                        DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
+
 all_solutions = {'NaCl in water': aqueous_NaCl,
                  'DLF in water': aqueous_DLF,
-                 'AS in water': aqueous_AS}
+                 'AS in water': aqueous_AS,
+                 'NaCl in ethanol' : ethanolic_NaCl,
+                 'NaCl in propanol' : propanolic_NaCl,
+                 'NaCl in butanol' : butanolic_NaCl}
 
 # Identical versions of the above solutions but with a simpler density parameterisation (volume additivity):
 from copy import copy
