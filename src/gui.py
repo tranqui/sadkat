@@ -42,6 +42,8 @@ class DropletSimulationGUI:
                                            justify_items='center', align_items='center')
         time_grid_layout = widgets.Layout(grid_template_columns='20% 30% 50%',
                                           justify_items='center', align_items='center')
+        eff_grid_layout = widgets.Layout(grid_template_columns='50% 50%',
+                                          justify_items='center', align_items='center')
         tab_grid_layout = widgets.Layout(grid_template_columns='repeat(2, 50%)',
                                          #justify_items='center', # uncomment to horizontally align buttons in the center
                                          align_items='center')
@@ -171,6 +173,25 @@ class DropletSimulationGUI:
         self.time_choices = widgets.GridBox([self.time_selection, self.stop_checkbox, self.stop_threshold_slider],
                                              layout=time_grid_layout)
 
+        self.efflorescence_checkbox = widgets.Checkbox(
+            value=False,
+            description='terminate on efflorescence',
+            indent=True,
+            layout=slide_layout
+        )
+        self.efflorescence_checkbox.observe(self.clicked_eff_checkbox, 'value')
+
+        self.efflorescence_threshold_slider = widgets.FloatSlider(
+            description='threshold', layout=slide_layout, disabled=True,
+            value=0.5, min=0, max=1, step=0.001, readout_format='.3g'
+        )
+
+        empty_text = widgets.Label('')
+        self.efflorescence_choices = widgets.GridBox([empty_text,
+                                                      self.efflorescence_checkbox,
+                                                      self.efflorescence_threshold_slider],
+                                                      layout=time_grid_layout)
+
         self.timestep_slider = widgets.FloatLogSlider(
             description='timestep / s', layout=slide_layout,
             value=1e-2, base=10, min=-5, max=-1, step=0.1, readout_format='.1g'
@@ -223,6 +244,7 @@ class DropletSimulationGUI:
                 self.simulation_label,
                 self.time_choices,
                 self.timestep_slider,
+                self.efflorescence_choices,
                 self.centered_run_button,
                 self.status_space,
                 self.output_tabs
@@ -268,6 +290,18 @@ class DropletSimulationGUI:
         """
         self.stop_threshold_slider.disabled = not self.stop_checkbox.value
 
+    def clicked_eff_checkbox(self, checkbox):
+        """Callback when the 'terminate on efflorescence' checkbox is clicked.
+
+        We disable the termination threshold slider when this box is not clicked, because that parameter
+        has no purpose outside of that termination condition.
+
+        Args:
+            checkbox: the checkbox widget that is clicked. This is not used, but it is needed
+                      to assign this function as a callback to clicking the checkbox.
+        """
+        self.efflorescence_threshold_slider.disabled = not self.efflorescence_checkbox.value
+
     @property
     def gui_state(self):
         """Get the state of *all* GUI settings describing the parameters of a simulation.
@@ -301,13 +335,18 @@ class DropletSimulationGUI:
             time = self.time_selection.value,
             timestep = self.timestep_slider.value,
             terminate_on_equilibration = self.stop_checkbox.value,
-            terminate_threshold = self.stop_threshold_slider.value
+            equilibration_threshold = self.stop_threshold_slider.value,
+            terminate_on_efflorescence = self.efflorescence_checkbox.value,
+            efflorescence_threshold = self.efflorescence_threshold_slider.value
+
         )
 
     def run(self, solution, density_fit, profile, npoints,
             initial_radius, initial_mfs, initial_temperature, initial_velocity, initial_position,
             ambient_temperature, ambient_RH, gas_velocity, gravity,
-            time, timestep, terminate_on_equilibration, terminate_threshold):
+            time, timestep,
+            terminate_on_equilibration, equilibration_threshold,
+            terminate_on_efflorescence, efflorescence_threshold):
         """
         Run a new simulation.
 
@@ -335,8 +374,12 @@ class DropletSimulationGUI:
                       as the integration algorithm will sometimes decide to take smaller timesteps.
             terminate_on_equilibration: a boolean; if True then the simulation will terminate early if
                       the droplet has stopped evolving (as determined by a threshold in the evaporation rate)
-            terminate_threshold: the threshold for the previous termination condition. If the evaporation rate
+            equilibration_threshold: the threshold for the previous termination condition. If the evaporation rate
                       divided by the initial mass falls below this threshold, then the simulation terminates.
+            terminate_on_efflorescence: a boolean; if True then the simulation will terminate early if
+                      the droplet effloresces (as determined by a threshold in the evaporation rate)
+            efflorescence_threshold: the threshold for the previous termination condition. If the solvent activity
+                      falls below this threshold, then the simulation terminates.
         Returns:
             The final droplet state.
             The trajectory of (independent) droplet variables from which its complete history can be
@@ -377,7 +420,9 @@ class DropletSimulationGUI:
         trajectory = droplet.integrate(time,
                                        timestep,
                                        terminate_on_equilibration,
-                                       terminate_threshold)
+                                       equilibration_threshold,
+                                       terminate_on_efflorescence,
+                                       efflorescence_threshold)
 
         return droplet, trajectory
 
