@@ -163,7 +163,7 @@ class UniformDroplet:
         """Magnitude of velocity vector in metres/second."""
         return np.linalg.norm(self.velocity)
 
-    @property
+    '''@property
     def jet_velocity(self):
 
         jet_initial_velocity = np.array([1,0,0]) * self.jet_initial_speed
@@ -192,7 +192,7 @@ class UniformDroplet:
                                             np.sqrt(self.aperture_area ) * 0.0354 * self.jet_archimedes_number * 
                                             (self.position[0] / np.sqrt(self.aperture_area) ) ** 3 *
                                             np.sqrt(self.jet_initial_temperature / self.environment.temperature) ])
-        return 0
+        return 0'''
 
     @property
     def relative_velocity(self):
@@ -214,7 +214,7 @@ class UniformDroplet:
         else: return (24 / Re) * (1 + Re**(2/3) / 6)
         
         
-    @property
+    '''@property
     def aperture_diameter(self):
         """"meters"""
         return 0.02
@@ -236,7 +236,7 @@ class UniformDroplet:
     def jet_archimedes_number(self):
         """""""
         return np.linalg.norm(self.gravity) * np.sqrt(aperture_area) * volumetric_expansion_coeffcient * 
-                                    (self.jet_initial_temperature - self.environment.temperature) * / self.jet_initial_speed ** 2
+                                    (self.jet_initial_temperature - self.environment.temperature) * / self.jet_initial_speed ** 2'''
 
 
     @property
@@ -405,11 +405,15 @@ class UniformDroplet:
             events = [equilibrated]
 
         dxdt = lambda t,x: self.virtual_droplet(x).dxdt
-        try:
-            with np.errstate(divide='raise', invalid='raise'):
-                trajectory = solve_ivp(dxdt, (0, t), self.state, max_step=dt, events=events)
-        except:
-            raise RuntimeError('an unknown error occurred during the simulation - try running again with a smaller timestep') from None
+        '''
+        temporarily commented out thhis try except pair
+        '''
+        #try:
+        #with np.errstate(divide='raise', invalid='raise'):
+        trajectory = solve_ivp(dxdt, (0, t), self.state, max_step=dt, events=events)
+        #except:
+            #raise RuntimeError('an unknown error occurred during the simulation - try running again with a smaller timestep') from None
+
 
         self.state = trajectory.y[:,-1]
         return trajectory
