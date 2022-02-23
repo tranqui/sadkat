@@ -5,7 +5,7 @@
 # +
 from dataclasses import dataclass
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib as mpl, matplotlib.pyplot as plt
 import pandas as pd
 
 # Set up the notebook so that the plots look about the right size.

@@ -382,9 +382,10 @@ class UniformDroplet:
         """Create an identical copy of this droplet."""
         return self.virtual_droplet(self.state.copy())
 
-    def integrate(self, t, dt=1e-4,
+    def integrate(self, t, rtol=1e-8,
                   terminate_on_equilibration=False, equ_threshold=1e-4,
-                  terminate_on_efflorescence=False, eff_threshold=0.5):
+                  terminate_on_efflorescence=False, eff_threshold=0.5,
+                  first_step=1e-12):
         """Integrate the droplet state forward in time.
 
         This solves an initial value problem with the current state as the initial conditions.
@@ -392,15 +393,18 @@ class UniformDroplet:
 
         Args:
             t: total time to integrate over (s).
-            dt: maximum timestep between frames in trajectory (s).
-                NB: if numerical artifacts occur in the resulting trajectory, that suggests this parameter
-                needs to be decreased.
-            terminate_on_equilibration (default=False): if True, then the integration will stop if the
-                evaporation rate falls below eps * the initial mass
+            rtol: relative tolerance used to set dynamic integration timestep between frames in
+                trajectory (s). Smaller tolerance means a more accurate integration.
+                NB: if numerical artifacts occur in the resulting trajectory, that suggests this
+                parameter needs to be decreased.
+            terminate_on_equilibration (default=False): if True, then the integration will stop if
+                the evaporation rate falls below eps * the initial mass
             equ_threshold: threshold to use for the equilibration termination criterion.
-            terminate_on_efflorescence (default=False): if True, then the integration will stop if the
-                solvent activity falls below a threshold.
+            terminate_on_efflorescence (default=False): if True, then the integration will stop if
+                the solvent activity falls below a threshold.
             eff_threshold: threshold to use for the efflorescence termination criterion.
+            first_step: size of initial integration step. The subsequent timesteps are determined
+                dynamically based on the rate of change and the error tolerance parameter rtol.
         Returns:
             Trajectory of historical droplets showing how it reaches the new state.
         """
@@ -421,9 +425,9 @@ class UniformDroplet:
         dxdt = lambda t,x: self.virtual_droplet(x).dxdt
         try:
             with np.errstate(divide='raise', invalid='raise'):
-                trajectory = solve_ivp(dxdt, (0, t), self.state, max_step=dt, events=events)
-        except:
-            raise RuntimeError('an unknown error occurred during the simulation - try running again with a smaller timestep') from None
+                trajectory = solve_ivp(dxdt, (0, t), self.state, first_step=first_step, rtol=rtol, events=events)
+        except Exception as e:
+            raise RuntimeError('an error ("%r") occurred during the simulation that we don\'t know how to handle - try running again with a smaller rtol' % e) from None
 
         self.state = trajectory.y[:,-1]
         return trajectory
@@ -481,8 +485,7 @@ if __name__ == '__main__':
                                       initial_position)
 
     time = 100 # seconds
-    timestep = 1e-2 # seconds
-    trajectory = droplet.integrate(time, timestep, terminate_on_equilibration=True)
+    trajectory = droplet.integrate(time, terminate_on_equilibration=True)
     # Obtain a table giving a history of *all* droplet parameters.
     history = droplet.complete_trajectory(trajectory)
 

@@ -40,7 +40,7 @@ class DropletSimulationGUI:
                                              #justify_content='center')
         coord_grid_layout = widgets.Layout(grid_template_columns='repeat(3, 30%)',
                                            justify_items='center', align_items='center')
-        time_grid_layout = widgets.Layout(grid_template_columns='20% 30% 50%',
+        time_grid_layout = widgets.Layout(grid_template_columns='30% 65%',
                                           justify_items='center', align_items='center')
         eff_grid_layout = widgets.Layout(grid_template_columns='50% 50%',
                                           justify_items='center', align_items='center')
@@ -157,21 +157,23 @@ class DropletSimulationGUI:
             layout=slide_layout
         )
 
-        self.stop_checkbox = widgets.Checkbox(
+        self.rtol_slider = widgets.FloatLogSlider(
+            description='rtol', layout=slide_layout,
+            value=1e-8, base=10, min=-12, max=-4, step=1, readout_format='.1g'
+        )
+
+        self.equilibrium_checkbox = widgets.Checkbox(
             value=True,
             description='terminate on equilibration',
             indent=True,
             layout=slide_layout
         )
-        self.stop_checkbox.observe(self.clicked_stop_checkbox, 'value')
+        self.equilibrium_checkbox.observe(self.clicked_equ_checkbox, 'value')
 
-        self.stop_threshold_slider = widgets.FloatLogSlider(
+        self.equilibrium_threshold_slider = widgets.FloatLogSlider(
             description='threshold', layout=slide_layout,
             value=1e-3, base=10, min=-8, max=-1, step=1, readout_format='.1g'
         )
-
-        self.time_choices = widgets.GridBox([self.time_selection, self.stop_checkbox, self.stop_threshold_slider],
-                                             layout=time_grid_layout)
 
         self.efflorescence_checkbox = widgets.Checkbox(
             value=False,
@@ -186,16 +188,14 @@ class DropletSimulationGUI:
             value=0.5, min=0, max=1, step=0.001, readout_format='.3g'
         )
 
-        empty_text = widgets.Label('')
-        self.efflorescence_choices = widgets.GridBox([empty_text,
-                                                      self.efflorescence_checkbox,
+        self.time_choices = widgets.GridBox([self.time_selection, self.rtol_slider],
+                                             layout=time_grid_layout)
+        self.equilibrium_choices = widgets.GridBox([self.equilibrium_checkbox,
+                                                    self.equilibrium_threshold_slider],
+                                                   layout=time_grid_layout)
+        self.efflorescence_choices = widgets.GridBox([self.efflorescence_checkbox,
                                                       self.efflorescence_threshold_slider],
-                                                      layout=time_grid_layout)
-
-        self.timestep_slider = widgets.FloatLogSlider(
-            description='timestep / s', layout=slide_layout,
-            value=1e-2, base=10, min=-5, max=-1, step=0.1, readout_format='.1g'
-        )
+                                                     layout=time_grid_layout)
 
         ## The start simulation button.
 
@@ -243,7 +243,7 @@ class DropletSimulationGUI:
                 self.gravity,
                 self.simulation_label,
                 self.time_choices,
-                self.timestep_slider,
+                self.equilibrium_choices,
                 self.efflorescence_choices,
                 self.centered_run_button,
                 self.status_space,
@@ -278,7 +278,7 @@ class DropletSimulationGUI:
         self.npoints_select.disabled = self.profile_dropdown.value == 'uniform' or \
                                        not self.density_dropdown.value == 'volume additivity'
 
-    def clicked_stop_checkbox(self, checkbox):
+    def clicked_equ_checkbox(self, checkbox):
         """Callback when the 'terminate on equilibration' checkbox is clicked.
 
         We disable the termination threshold slider when this box is not clicked, because that parameter
@@ -288,7 +288,7 @@ class DropletSimulationGUI:
             checkbox: the checkbox widget that is clicked. This is not used, but it is needed
                       to assign this function as a callback to clicking the checkbox.
         """
-        self.stop_threshold_slider.disabled = not self.stop_checkbox.value
+        self.equilibrium_threshold_slider.disabled = not self.equilibrium_checkbox.value
 
     def clicked_eff_checkbox(self, checkbox):
         """Callback when the 'terminate on efflorescence' checkbox is clicked.
@@ -333,9 +333,9 @@ class DropletSimulationGUI:
 
             # Simulation parameters.
             time = self.time_selection.value,
-            timestep = self.timestep_slider.value,
-            terminate_on_equilibration = self.stop_checkbox.value,
-            equilibration_threshold = self.stop_threshold_slider.value,
+            rtol = self.rtol_slider.value,
+            terminate_on_equilibration = self.equilibrium_checkbox.value,
+            equilibration_threshold = self.equilibrium_threshold_slider.value,
             terminate_on_efflorescence = self.efflorescence_checkbox.value,
             efflorescence_threshold = self.efflorescence_threshold_slider.value
 
@@ -344,7 +344,7 @@ class DropletSimulationGUI:
     def run(self, solution, density_fit, profile, npoints,
             initial_radius, initial_mfs, initial_temperature, initial_velocity, initial_position,
             ambient_temperature, ambient_RH, gas_velocity, gravity,
-            time, timestep,
+            time, rtol,
             terminate_on_equilibration, equilibration_threshold,
             terminate_on_efflorescence, efflorescence_threshold):
         """
@@ -369,9 +369,8 @@ class DropletSimulationGUI:
             gas_velocity: a 3-dimensional vector specifying the velocity of background gas in metres/second.
             gravity: a 3-dimensional acceleration vector from body forces (e.g. gravity).
             time: the total time to run the simulation for in seconds.
-            timestep: the timestep in the simulation in seconds. A smaller number will make the simulation
-                      more accurate, but also take longer. NB: this is technically the *maximum* timestep,
-                      as the integration algorithm will sometimes decide to take smaller timesteps.
+            rtol: relative error tolerance used to determine simulation timesteps. A smaller number
+                      will make the simulation more accurate, but also take longer.
             terminate_on_equilibration: a boolean; if True then the simulation will terminate early if
                       the droplet has stopped evolving (as determined by a threshold in the evaporation rate)
             equilibration_threshold: the threshold for the previous termination condition. If the evaporation rate
@@ -418,7 +417,7 @@ class DropletSimulationGUI:
             raise ValueError('unrecognised concentration profile: %s' % profile)
 
         trajectory = droplet.integrate(time,
-                                       timestep,
+                                       rtol,
                                        terminate_on_equilibration,
                                        equilibration_threshold,
                                        terminate_on_efflorescence,
@@ -691,12 +690,15 @@ if __name__ == '__main__':
 # ## 4.3. Iterating over input parameters
 
 # +
-def simulate(time, timestep,
+def simulate(time,
              solution, ambient_temperature, ambient_RH,
              initial_radius, initial_temperature, initial_mfs,
              initial_velocity = np.zeros(3), # metres/second
              initial_position = np.zeros(3), # metres/second
-             gravity = np.zeros(3)):
+             gravity = np.zeros(3),
+             rtol=1e-8,
+             terminate_on_equilibration=True, equ_threshold=1e-4,
+             terminate_on_efflorescence=False, eff_threshold=0.5):
 
     gas = Atmosphere(ambient_temperature, ambient_RH)
     droplet = UniformDroplet.from_mfs(solution,
@@ -707,58 +709,53 @@ def simulate(time, timestep,
                                       initial_temperature,
                                       initial_velocity,
                                       initial_position)
-    trajectory = droplet.integrate(time, timestep, terminate_on_equilibration=True, eps = 0.001)
+    trajectory = droplet.integrate(time, rtol=rtol,
+                                   terminate_on_equilibration=terminate_on_equilibration,
+                                   terminate_on_efflorescence=terminate_on_efflorescence,
+                                   equ_threshold=equ_threshold, eff_threshold=eff_threshold)
 
     return droplet, trajectory
 # -
 
 # +
-R0 = 25e-6 # metres
-T = 293.15 # Kelvin
-mfs = 0
+if __name__ == '__main__':
+    solution = aqueous_NaCl
+    R0 = 25e-6 # metres
+    T = 293.15 # Kelvin
+    mfs = 0
+    time = 25 # seconds
 
-time = 25 # seconds
-timestep = 0.1 # seconds
+    history_list = []
 
-history_list = []
+    RH_range = np.linspace(0, 1, 100)**0.5
+    #RH_range = np.linspace(0, 1, 11)
 
-RH_range = np.sqrt(np.linspace(0,100**2, 100)) / 100 #np.arange(0,1.001,0.1)
+    for RH in RH_range:
+        print(RH)
+        droplet, trajectory = simulate(time, solution, T, RH, R0, T, mfs)
 
-for RH in RH_range:
+        # Obtain a table giving a history of *all* droplet parameters.
+        history = droplet.complete_trajectory(trajectory)
+        history_list.append(history)
 
-    droplet, trajectory = simulate(time, timestep, solution, T, RH, R0, T, mfs)
+    cmap = mpl.cm.cool_r
+    norm = mpl.colors.Normalize(vmin=100*np.min(RH_range), vmax=100*np.max(RH_range))
 
-    # Obtain a table giving a history of *all* droplet parameters.
-    history = droplet.complete_trajectory(trajectory)
-    history_list.append(history)
+    colors = plt.cm.cool_r(RH_range)
 
-RH = 0.9
-specific_droplet, specific_trajectory = simulate(time, timestep, solution, T, RH, R0, T, mfs)
-# -
+    for history, RH, color in zip(history_list, RH_range, colors):
+        plt.plot(history['time'], history['radius'] / 1e-6, c = color)
 
-# +
-import matplotlib as mpl
-cmap = mpl.cm.cool_r
-norm = mpl.colors.Normalize(vmin=100 * RH_range.min(), vmax=100 * RH_range.max())
+    RH = 0.9
+    specific_droplet, specific_trajectory = simulate(time, solution, T, RH, R0, T, mfs)
+    trajectory = specific_droplet.complete_trajectory(specific_trajectory)
+    plt.plot(trajectory['time'], trajectory['radius'] / 1e-6, '--', label = 100 * RH)
 
-colors = plt.cm.cool_r(RH_range)
+    plt.xlabel('Time / s')
+    plt.ylabel('Radius / µm')
+    plt.hlines((0,25),0,25,'k')
 
-for history, RH, color in zip(history_list, RH_range, colors):
-
-
-    plt.plot(history['time'], history['radius'] / 1e-6, c = color)
-
-
-RH = 0.9
-trajectory = specific_droplet.complete_trajectory(specific_trajectory)
-plt.plot(trajectory['time'], trajectory['radius'] / 1e-6, '--', label = 100 * RH)
-
-plt.xlabel('Time / s')
-plt.ylabel('Radius / µm')
-plt.hlines((0,25),0,25,'k')
-
-
-plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
-plt.legend()
-plt.show()
+    plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
+    plt.legend(loc='best')
+    plt.show()
 # -
