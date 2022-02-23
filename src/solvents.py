@@ -45,7 +45,6 @@ class VapourBinaryDiffusionCoefficient:
 
 # ### 2.1.2 Kelvin Effect
 
-
 # +
 def surface_tension(A, B, C, D, E, T_crit, T):
     """Takes fitting parameters and tempertature (K) and returns surface tension (N/m).
@@ -79,13 +78,15 @@ def kelvin_effect(solvent_surface_tension, solvent_density, solvent_molar_mass, 
 # This shows that it is only really significant for very small droplets, but I think its valuable and relatively easy to include.
 
 # +
-R_range = np.arange(1e-9,30e-9, 1e-10)
+if __name__ == '__main__':
+    R_range = np.arange(1e-9,30e-9, 1e-10)
 
-curve_range = kelvin_effect(0.073, 997, 0.018, 293, 2300, R_range )
+    curve_range = kelvin_effect(0.073, 997, 0.018, 293, 2300, R_range )
 
-plt.plot(R_range/1e-9,curve_range/2300)
-plt.xlabel('radius / nm')
-plt.ylabel('P_vap / P_vap_flat')
+    plt.figure()
+    plt.plot(R_range/1e-9,curve_range/2300)
+    plt.xlabel('radius / nm')
+    plt.ylabel('P_vap / P_vap_flat')
 # -
 
 # ### 2.1.3. Properties of pure water
@@ -178,15 +179,14 @@ if __name__ == '__main__':
     ax4.plot(T_C, Water.vapour_binary_diffusion_coefficient(T_C+T_freezing))
     ax4.set_xlabel('T (℃)')
     ax4.set_ylabel('$D_\infty$ (m$^2$/s)')
-
-    plt.show()
 # -
 
 # +
-plt.plot(T_C ,Water.surface_tension(T_C + T_freezing))
-plt.xlabel('T (℃)')
-plt.ylabel('Surface tension / N / m')
-
+if __name__ == '__main__':
+    plt.figure()
+    plt.plot(T_C, Water.surface_tension(T_C + T_freezing))
+    plt.xlabel('T (℃)')
+    plt.ylabel('Surface tension / N / m')
 # -
 
 # +
@@ -288,7 +288,6 @@ def equilibrium_vapour_pressure_ethanol(temperature_K):
 
     P_vap = antoine_equation(temperature_K,5.37229, 1670.409, -40.191) * 100000 # coeffs for bar so have converted
 
-
     return P_vap
 
 def surface_tension_ethanol(T):
@@ -308,35 +307,36 @@ Ethanol = Solvent(molar_mass_ethanol,
 # -
 
 # +
-T_C = np.linspace(0, 78, 79)
-fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(ncols=2, nrows=2)
+if __name__ == '__main__':
+    T_C = np.linspace(0, 78, 79)
+    fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(ncols=2, nrows=2)
 
-colour = 'k'
+    colour = 'k'
 
-ax1.plot(T_C, Ethanol.density(T_C + T_freezing), c = colour)
-ax1.set_xlabel('T (℃)')
-ax1.set_ylabel('density (kg/m3)')
+    ax1.plot(T_C, Ethanol.density(T_C + T_freezing), c = colour)
+    ax1.set_xlabel('T (℃)')
+    ax1.set_ylabel('density (kg/m3)')
 
-ax2.plot(T_C, Ethanol.specific_latent_heat_vaporisation(T_C + T_freezing), c = colour)
-#ax2.axhline(y=2264.705, ls='dashed')
-ax2.set_xlabel('T (℃)')
-ax2.set_ylabel('L (kJ/kg)')
+    ax2.plot(T_C, Ethanol.specific_latent_heat_vaporisation(T_C + T_freezing), c = colour)
+    #ax2.axhline(y=2264.705, ls='dashed')
+    ax2.set_xlabel('T (℃)')
+    ax2.set_ylabel('L (kJ/kg)')
 
-ax3.plot(T_C, Ethanol.equilibrium_vapour_pressure(T_C+T_freezing), c = colour)
-ax3.set_xlabel('T (℃)')
-ax3.set_ylabel('equilibrium vapour pressure (Pa)')
+    ax3.plot(T_C, Ethanol.equilibrium_vapour_pressure(T_C+T_freezing), c = colour)
+    ax3.set_xlabel('T (℃)')
+    ax3.set_ylabel('equilibrium vapour pressure (Pa)')
 
-ax4.plot(T_C, Ethanol.vapour_binary_diffusion_coefficient(T_C+T_freezing), c = colour)
-ax4.set_xlabel('T (℃)')
-ax4.set_ylabel('$D_\infty$ (m$^2$/s)')
-
-plt.show()
+    ax4.plot(T_C, Ethanol.vapour_binary_diffusion_coefficient(T_C+T_freezing), c = colour)
+    ax4.set_xlabel('T (℃)')
+    ax4.set_ylabel('$D_\infty$ (m$^2$/s)')
 # -
 
 # +
-plt.plot(T_C ,Ethanol.surface_tension(T_C + T_freezing), c = 'k')
-plt.xlabel('T (℃)')
-plt.ylabel('Surface tension / N / m')
+if __name__ == '__main__':
+    plt.figure()
+    plt.plot(T_C, Ethanol.surface_tension(T_C + T_freezing), c = 'k')
+    plt.xlabel('T (℃)')
+    plt.ylabel('Surface tension / N / m')
 # -
 
 # ### 2.1.5. Properties of pure propanol
@@ -358,11 +358,9 @@ def density_propanol(temperature):
 
     A, B, C, D = 74.5237, 0.27342, 508.3, 0.235299
 
-
     density = rackett_equation(A, B, C, D, temperature)
 
     return density
-
 
 def specific_heat_capacity_propanol(T):
     # https://webbook.nist.gov/cgi/cbook.cgi?ID=C71238&Mask=2
@@ -425,35 +423,36 @@ Propanol = Solvent(molar_mass_propanol,
 # -
 
 # +
-T_C = np.linspace(0, 100, 101)
-fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(ncols=2, nrows=2)
+if __name__ == '__main__':
+    T_C = np.linspace(0, 100, 101)
+    fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(ncols=2, nrows=2)
 
-colour = 'r'
+    colour = 'r'
 
-ax1.plot(T_C, Propanol.density(T_C + T_freezing), c = colour)
-ax1.set_xlabel('T (℃)')
-ax1.set_ylabel('density (kg/m3)')
+    ax1.plot(T_C, Propanol.density(T_C + T_freezing), c = colour)
+    ax1.set_xlabel('T (℃)')
+    ax1.set_ylabel('density (kg/m3)')
 
-ax2.plot(T_C, Propanol.specific_latent_heat_vaporisation(T_C + T_freezing), c = colour)
-#ax2.axhline(y=2264.705, ls='dashed')
-ax2.set_xlabel('T (℃)')
-ax2.set_ylabel('L (kJ/kg)')
+    ax2.plot(T_C, Propanol.specific_latent_heat_vaporisation(T_C + T_freezing), c = colour)
+    #ax2.axhline(y=2264.705, ls='dashed')
+    ax2.set_xlabel('T (℃)')
+    ax2.set_ylabel('L (kJ/kg)')
 
-ax3.plot(T_C, Propanol.equilibrium_vapour_pressure(T_C+T_freezing), c = colour)
-ax3.set_xlabel('T (℃)')
-ax3.set_ylabel('equilibrium vapour pressure (Pa)')
+    ax3.plot(T_C, Propanol.equilibrium_vapour_pressure(T_C+T_freezing), c = colour)
+    ax3.set_xlabel('T (℃)')
+    ax3.set_ylabel('equilibrium vapour pressure (Pa)')
 
-ax4.plot(T_C, Propanol.vapour_binary_diffusion_coefficient(T_C+T_freezing), c = colour)
-ax4.set_xlabel('T (℃)')
-ax4.set_ylabel('$D_\infty$ (m$^2$/s)')
-
-plt.show()
+    ax4.plot(T_C, Propanol.vapour_binary_diffusion_coefficient(T_C+T_freezing), c = colour)
+    ax4.set_xlabel('T (℃)')
+    ax4.set_ylabel('$D_\infty$ (m$^2$/s)')
 # -
 
 # +
-plt.plot(T_C ,Propanol.surface_tension(T_C + T_freezing), c = 'r')
-plt.xlabel('T (℃)')
-plt.ylabel('Surface tension / N / m')
+if __name__ == '__main__':
+    plt.figure()
+    plt.plot(T_C, Propanol.surface_tension(T_C + T_freezing), c = 'r')
+    plt.xlabel('T (℃)')
+    plt.ylabel('Surface tension / N / m')
 # -
 
 # ### 2.1.5. Properties of pure Butanol
@@ -537,33 +536,35 @@ Butanol = Solvent(molar_mass_butanol,
 # -
 
 # +
-T_C = np.linspace(0, 117, 118)
-fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(ncols=2, nrows=2)
+if __name__ == '__main__':
+    T_C = np.linspace(0, 117, 118)
+    fig, ((ax1,ax2),(ax3,ax4)) = plt.subplots(ncols=2, nrows=2)
 
-colour = 'g'
+    colour = 'g'
 
-ax1.plot(T_C, Butanol.density(T_C + T_freezing), c = colour)
-ax1.set_xlabel('T (℃)')
-ax1.set_ylabel('density (kg/m3)')
+    ax1.plot(T_C, Butanol.density(T_C + T_freezing), c = colour)
+    ax1.set_xlabel('T (℃)')
+    ax1.set_ylabel('density (kg/m3)')
 
-ax2.plot(T_C, Butanol.specific_latent_heat_vaporisation(T_C + T_freezing), c = colour)
-#ax2.axhline(y=2264.705, ls='dashed')
-ax2.set_xlabel('T (℃)')
-ax2.set_ylabel('L (kJ/kg)')
+    ax2.plot(T_C, Butanol.specific_latent_heat_vaporisation(T_C + T_freezing), c = colour)
+    #ax2.axhline(y=2264.705, ls='dashed')
+    ax2.set_xlabel('T (℃)')
+    ax2.set_ylabel('L (kJ/kg)')
 
-ax3.plot(T_C, Butanol.equilibrium_vapour_pressure(T_C+T_freezing), c = colour)
-ax3.set_xlabel('T (℃)')
-ax3.set_ylabel('equilibrium vapour pressure (Pa)')
+    ax3.plot(T_C, Butanol.equilibrium_vapour_pressure(T_C+T_freezing), c = colour)
+    ax3.set_xlabel('T (℃)')
+    ax3.set_ylabel('equilibrium vapour pressure (Pa)')
 
-ax4.plot(T_C, Butanol.vapour_binary_diffusion_coefficient(T_C+T_freezing), c = colour)
-ax4.set_xlabel('T (℃)')
-ax4.set_ylabel('$D_\infty$ (m$^2$/s)')
-
-plt.show()
+    ax4.plot(T_C, Butanol.vapour_binary_diffusion_coefficient(T_C+T_freezing), c = colour)
+    ax4.set_xlabel('T (℃)')
+    ax4.set_ylabel('$D_\infty$ (m$^2$/s)')
 # -
 
 # +
-plt.plot(T_C ,Butanol.surface_tension(T_C + T_freezing), c = 'g')
-plt.xlabel('T (℃)')
-plt.ylabel('Surface tension / N / m')
+if __name__ == '__main__':
+    plt.figure()
+    plt.plot(T_C, Butanol.surface_tension(T_C + T_freezing), c = 'g')
+    plt.xlabel('T (℃)')
+    plt.ylabel('Surface tension / N / m')
+    plt.show()
 # -
