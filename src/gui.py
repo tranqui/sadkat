@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # + ignore="True"
 from droplet import *
 # -
@@ -681,15 +682,12 @@ class DropletSimulationGUI:
 
 # ## 4.2. Executing the graphical program to run simulations
 
-# +
 if __name__ == '__main__':
     gui = DropletSimulationGUI()
     gui.display()
-# -
 
 # ## 4.3. Iterating over input parameters
 
-# +
 def simulate(time,
              solution, ambient_temperature, ambient_RH,
              initial_radius, initial_temperature, initial_mfs,
@@ -715,23 +713,21 @@ def simulate(time,
                                    equ_threshold=equ_threshold, eff_threshold=eff_threshold)
 
     return droplet, trajectory
-# -
 
-# +
 if __name__ == '__main__':
     solution = aqueous_NaCl
     R0 = 25e-6 # metres
-    T = 293.15 # Kelvin
+    T = 298.15 # Kelvin
     mfs = 0
     time = 25 # seconds
 
     history_list = []
 
-    RH_range = np.linspace(0, 1, 100)**0.5
-    #RH_range = np.linspace(0, 1, 11)
+    #RH_range = np.linspace(0, 1, 100)**0.5
+    RH_range = np.linspace(0, 1, 11)
 
     for RH in RH_range:
-        print(RH)
+        print('\r'+str(RH), end = '')
         droplet, trajectory = simulate(time, solution, T, RH, R0, T, mfs)
 
         # Obtain a table giving a history of *all* droplet parameters.
@@ -749,7 +745,7 @@ if __name__ == '__main__':
     RH = 0.9
     specific_droplet, specific_trajectory = simulate(time, solution, T, RH, R0, T, mfs)
     trajectory = specific_droplet.complete_trajectory(specific_trajectory)
-    plt.plot(trajectory['time'], trajectory['radius'] / 1e-6, '--', label = 100 * RH)
+    plt.plot(trajectory['time'], trajectory['radius'] / 1e-6, '--', color = 'k', label = 100 * RH)
 
     plt.xlabel('Time / s')
     plt.ylabel('Radius / µm')
@@ -758,4 +754,324 @@ if __name__ == '__main__':
     plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
     plt.legend(loc='best')
     plt.show()
-# -
+
+if __name__ == '__main__':
+    Kulmala_data = np.load('src/kulmala_data.npy', allow_pickle = True)
+    Kulmala_RH_list = np.load('src/kulmala_rh_list.npy', allow_pickle = True)
+
+    Su_data = np.load('src/Su_data.npy', allow_pickle = True)
+    Su_RH_list = np.load('src/Su_rh_list.npy', allow_pickle = True)
+
+if __name__ == '__main__':
+    solution = aqueous_NaCl
+    R0 = 25e-6 # metres
+    T = 298.15 # Kelvin
+    mfs = 0
+    time = 25 # seconds
+
+    history_list = []
+
+    #RH_range = np.linspace(0, 1, 100)**0.5
+    RH_range = np.linspace(0, 1, 41)
+
+    for RH in RH_range:
+        print('\r'+str(round(RH,3)), end = '')
+        droplet, trajectory = simulate(time, solution, T, RH, R0, T, mfs)
+
+        # Obtain a table giving a history of *all* droplet parameters.
+        history = droplet.complete_trajectory(trajectory)
+        history_list.append(history)
+        
+    sadkat_data = history_list
+    sadkat_RH_list = RH_range
+
+if __name__ == '__main__':
+    def trim_data(time_data, property_data):
+        '''
+        Clips off first 10% and last 10% of data for calcualtion of evaporation rate.
+        '''
+
+        time_start = time_data.max() * 0.1
+        time_end = time_data.max() * 0.9
+
+        selection = (time_data >= time_start) & (time_data <= time_end)
+
+        time_data = time_data[selection]
+
+        property_data = property_data[selection]
+
+        return time_data, property_data
+
+    def get_evaporation_rate(t, r2):
+        '''
+        Takes time data and r^2 data and calculated evaporation data.
+
+        '''
+        return -np.gradient(r2, t)
+
+
+if __name__ == '__main__':
+
+    #preparing Kulmala data
+    for dataset, RH in zip(Kulmala_data, Kulmala_RH_list):
+        dataset['k_um2pers'] = get_evaporation_rate(dataset.T_s, dataset.R2_um2)
+
+    for dataset, RH in zip(Kulmala_data, Kulmala_RH_list):
+        dataset['radius2_um2'] = dataset.R2_um2
+        dataset['radius_um'] = np.sqrt(dataset.R2_um2)
+        dataset['time_s'] = dataset.T_s
+
+
+    Kulmala_k_means = []
+    for dataset, RH in zip(Kulmala_data, Kulmala_RH_list):
+        Kulmala_k_means.append(trim_data(dataset.T_s, dataset.k_um2pers)[1].mean())
+
+
+    #4th order polynomial fit of Kulmala k vs RH
+    Kulmala_poly_model = np.poly1d(np.polyfit(Kulmala_RH_list,
+                                              Kulmala_k_means,
+                                              4))
+
+    #preparing Su data
+    for dataset, RH in zip(Su_data, Su_RH_list):
+        dataset['radius_um'] = dataset.radius_m * 1e6
+        dataset['radius2_um2'] = dataset.radius_um ** 2
+        dataset['k_um2pers'] = get_evaporation_rate(dataset.time_s, dataset.radius2_um2)
+
+    Su_k_means = []
+    for dataset, RH in zip(Su_data, Su_RH_list):
+        Su_k_means.append(trim_data(dataset.time_s, dataset.k_um2pers)[1].mean())
+
+    #4th order polynomial fit of Su k vs RH
+    Su_poly_model = np.poly1d(np.polyfit(Su_RH_list,
+                                               Su_k_means,
+                                               4))
+
+    Su_T_supression = []
+    for dataset, RH in zip(Su_data, Su_RH_list):
+        Su_T_supression.append(trim_data(dataset.time_s, -dataset.delta_T)[1].mean())
+
+    #4th order polynomial fit of Su k vs RH
+    Su_T_poly_model = np.poly1d(np.polyfit(Su_RH_list,
+                                           Su_T_supression,
+                                           4))
+    #preparing SADKAT data
+    for dataset, RH in zip(sadkat_data, sadkat_RH_list):
+        dataset['time_s'] = dataset.time
+        dataset['radius_um'] = dataset.radius * 1e6
+        dataset['radius2_um2'] = dataset.radius_um ** 2
+        dataset['k_um2pers'] = get_evaporation_rate(dataset.time, dataset.radius2_um2)
+
+    sadkat_k_means = []
+    for dataset, RH in zip(sadkat_data, sadkat_RH_list):
+        sadkat_k_means.append(trim_data(dataset.time, dataset.k_um2pers)[1].mean())
+
+    #4th order polynomial fit of sadkat k vs RH
+    sadkat_poly_model = np.poly1d(np.polyfit(sadkat_RH_list,
+                                               sadkat_k_means,
+                                               4))
+    sadkat_T_supression = []
+    for dataset, RH in zip(sadkat_data, sadkat_RH_list):
+        sadkat_T_supression.append(trim_data(dataset.time, 298.15 - dataset.temperature)[1].mean())
+
+    #4th order polynomial fit of Su ∆T vs RH
+    sadkat_T_poly_model = np.poly1d(np.polyfit(sadkat_RH_list,
+                                           sadkat_T_supression,
+                                           4))
+
+
+if __name__ == '__main__':
+    def plot_rh_dependent_data(data, RH_list, k_means, k_poly_model, cmap = mpl.cm.viridis):
+
+        #test
+        norm = mpl.colors.Normalize(vmin= RH_list.min(), vmax=RH_list.max())
+        colours = cmap(RH_list)
+
+        for dataset, RH, colour in zip(data, RH_list, colours):
+            plt.plot(dataset.time_s.values,
+                     dataset.radius_um.values,
+                     color = colour)
+        plt.xlabel('Time / s')
+        plt.ylabel('Radius / µm')
+        plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
+        plt.show()
+
+        for dataset, RH, colour in zip(data, RH_list, colours):
+            plt.plot(dataset.time_s.values,
+                     dataset.radius2_um2.values,
+                     color = colour)
+        plt.xlabel('Time / s')
+        plt.ylabel('Radius$^2$ / µm$^2$')
+        plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
+        plt.show()
+
+        for dataset, RH, colour in zip(data, RH_list, colours):
+            plt.plot(dataset.time_s.values,
+                     dataset.k_um2pers.values,
+                     color = colour, ls = ':')
+            plt.plot(trim_data(dataset.time_s, dataset.k_um2pers)[0],
+                     trim_data(dataset.time_s, dataset.k_um2pers)[1],
+                     color = colour)
+        plt.xlabel('RH')
+        plt.ylabel(r'Evaporation Rate / µm$^2$s$^{-1}$')
+        plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
+        plt.show()
+
+        for k, RH, colour in zip(k_means, RH_list, colours):
+            plt.scatter(RH,
+                        k,
+                        color = colour, s = 100)
+        plt.plot(np.linspace(0,1,100),
+                 k_poly_model(np.linspace(0,1,100)),
+                 lw = 0.5,
+                 color = 'k')
+        plt.xlabel('RH')
+        plt.ylabel(r'Evaporation Rate / µm$^2$s$^{-1}$')
+        plt.show()
+
+        return
+
+
+if __name__ == '__main__':
+    plot_rh_dependent_data(Kulmala_data, Kulmala_RH_list, Kulmala_k_means, Kulmala_poly_model, mpl.cm.winter_r)
+
+
+if __name__ == '__main__':
+    plot_rh_dependent_data(Su_data, Su_RH_list, Su_k_means, Su_poly_model, mpl.cm.plasma_r)
+
+if __name__ == '__main__':
+    cmap = mpl.cm.plasma_r
+    norm = mpl.colors.Normalize(vmin= Su_RH_list.min(), vmax=Su_RH_list.max())
+    Su_colours = cmap(Su_RH_list)
+    for dataset, RH, colour in zip(Su_data, Su_RH_list, Su_colours):
+        plt.plot(dataset.time_s.values,
+                 298.15 + dataset.delta_T.values,
+                 color = colour)
+
+    plt.xlabel('Time / s')
+    plt.ylabel('Droplet Temperature / K')
+    plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
+    plt.show()
+
+
+    for T, RH, colour in zip(Su_T_supression, Su_RH_list, Su_colours):
+        plt.scatter(RH,
+                    T,
+                    color = colour, s = 100)
+    plt.plot(np.linspace(0,1,100),
+             Su_T_poly_model(np.linspace(0,1,100)),
+             lw = 0.5,
+             color = 'k')
+    plt.xlabel('RH')
+    plt.ylabel(r'Temperature Suppression / K')
+    plt.show()
+
+if __name__ == '__main__':
+    plot_rh_dependent_data(sadkat_data, sadkat_RH_list, sadkat_k_means, sadkat_poly_model, mpl.cm.cool_r)
+
+if __name__ == '__main__':
+    cmap = mpl.cm.cool_r
+    norm = mpl.colors.Normalize(vmin= sadkat_RH_list.min(), vmax=sadkat_RH_list.max())
+    sadkat_colours = cmap(sadkat_RH_list)
+
+    for dataset, RH, colour in zip(sadkat_data, sadkat_RH_list, sadkat_colours):
+        plt.plot(dataset.time.values,
+                 dataset.temperature.values,
+                 color = colour)
+    plt.xlabel('Time / s')
+    plt.ylabel('Droplet Temperature / K')
+    plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
+    plt.show()
+
+    for T, RH, colour in zip(sadkat_T_supression, sadkat_RH_list, sadkat_colours):
+        plt.scatter(RH,
+                    T,
+                    color = colour, s = 100)
+    plt.plot(np.linspace(0,1,100),
+             sadkat_T_poly_model(np.linspace(0,1,100)),
+             lw = 0.5,
+             color = 'k')
+    plt.xlabel('RH')
+    plt.ylabel(r'Temperature Suppression / K')
+    plt.show()
+    
+
+if __name__ == '__main__':
+
+    from matplotlib.patches import Patch
+    from matplotlib.lines import Line2D
+
+    #comparing evaporation rate data
+
+    for k, RH in zip(Kulmala_k_means, Kulmala_RH_list):
+        plt.scatter(RH,
+                    k,
+                    color = '#004D40', s = 100, marker = '+')
+    plt.plot(np.linspace(0,1,100),
+             Kulmala_poly_model(np.linspace(0,1,100)),
+             lw = 0.5,
+             color = '#004D40')
+
+    for k, RH in zip(Su_k_means, Su_RH_list):
+        plt.scatter(RH,
+                    k,
+                    color = '#1E88E5', s = 100, marker = 'x')
+    plt.plot(np.linspace(0,1,100),
+             Su_poly_model(np.linspace(0,1,100)),
+             lw = 0.5,
+             color = '#1E88E5')
+
+    for k, RH in zip(sadkat_k_means, sadkat_RH_list):
+        plt.scatter(RH,
+                    k,
+                    color = '#D81B60', s = 100, marker = 'o')
+    plt.plot(np.linspace(0,1,100),
+             sadkat_poly_model(np.linspace(0,1,100)),
+             lw = 0.5,
+             color = '#D81B60')
+
+    plt.xlabel('RH')
+    plt.ylabel(r'Evaporation Rate / µm$^2$s$^{-1}$')
+
+    legend_elements = [Line2D([0], [0], marker='+', color='#004D40', label='Kulmala',
+                              markerfacecolor='#004D40', markersize=11, lw = 1),
+                       Line2D([0], [0], marker='x', color='#1E88E5', label='Su',
+                              markerfacecolor='#1E88E5', markersize=11, lw = 1),
+                       Line2D([0], [0], marker='o', color='#D81B60', label='SADKAT',
+                              markerfacecolor='#D81B60', markersize=11, lw = 1),]
+
+    plt.legend(handles=legend_elements)
+
+    plt.show()
+
+    # comparing temperature suppresssion data
+    for T, RH in zip(Su_T_supression, Su_RH_list):
+        plt.scatter(RH,
+                    T,
+                    color = '#1E88E5', s = 100, marker = 'x')
+    plt.plot(np.linspace(0,1,100),
+             Su_T_poly_model(np.linspace(0,1,100)),
+             lw = 0.5,
+             color = '#1E88E5')
+    plt.xlabel('RH')
+
+    for T, RH in zip(sadkat_T_supression, sadkat_RH_list):
+        plt.scatter(RH,
+                    T,
+                    color = '#D81B60', s = 100)
+    plt.plot(np.linspace(0,1,100),
+             sadkat_T_poly_model(np.linspace(0,1,100)),
+             lw = 0.5,
+             color = '#D81B60')
+    plt.xlabel('RH')
+    plt.ylabel(r'Temperature Suppression / K')
+    legend_elements = [Line2D([0], [0], marker='x', color='#1E88E5', label='Su',
+                              markerfacecolor='#1E88E5', markersize=11, lw = 1),
+                       Line2D([0], [0], marker='o', color='#D81B60', label='SADKAT',
+                              markerfacecolor='#D81B60', markersize=11, lw = 1),]
+
+    plt.legend(handles=legend_elements)
+    plt.show()
+
+
+
