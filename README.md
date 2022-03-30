@@ -15,6 +15,7 @@ This package implements a widely used theoretical model for aerosol drying descr
 * Walker, J. S. _et al_, "Accurate Representations of the Microphysical Processes Occurring
 during the Transport of Exhaled Aerosols and Droplets", ACS Cent. Sci.(7), 200-209 (2021). DOI: [10.1021/acscentsci.0c01522](https://doi.org/10.1021/acscentsci.0c01522).
 
+
 Authors:
 * Joshua Robinson ([joshua.robinson@bristol.ac.uk](mailto:joshua.robinson@bristol.ac.uk))
 * Dan Hardy ([dan.hardy@bristol.ac.uk](mailto:dan.hardy@bristol.ac.uk))
