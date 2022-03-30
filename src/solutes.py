@@ -56,7 +56,7 @@ def invert_fit(y, yfit):
         The value x(y).
     """
     x = (yfit - y).roots
-    x = np.real(np.min(x[np.isreal(x)]))
+    x = np.real(np.min(x[(np.isreal(x)) & (x >= 0)]))
     return x
 
 class ActivityVsMfsParameterisation:
@@ -94,7 +94,6 @@ class MfsVsActivityParameterisation:
 
 # Check the fit inversions in each kind of parameterisations are working correctly. That is, if we have a parameterisation from mfs -> activity, then this should be consistent with the inverse mapping activity -> mfs. In each plot below the regular and inverted fits should overlap:
 
-# +
 if __name__ == '__main__':
     # Dummy parameters for the fits.
     forward_fit = ActivityVsMfsParameterisation([1, -1, 1, -1])
@@ -115,7 +114,6 @@ if __name__ == '__main__':
     ax2.legend(loc='best')
     ax2.set_title('backward parameterisation')
     plt.show()
-# -
 
 # Data structures for parameterising solutes:
 
@@ -282,7 +280,6 @@ for label, solution in all_solutions.items():
 
 # Sanity check the parameterisations of the solutions by plotting some of their properties below:
 
-# +
 if __name__ == '__main__':
     mfs = np.linspace(0, 1, 100)
     fig, (ax1, ax2) = plt.subplots(ncols=2)
@@ -308,5 +305,4 @@ if __name__ == '__main__':
     ax2.legend(loc='best')
 
     plt.show()
-# -
 
