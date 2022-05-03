@@ -8,7 +8,6 @@ from gas import *
 
 # # 3.1. Definition
 
-# +
 @dataclass
 class UniformDroplet:
     """This class completely describes the state of the droplet during its evolution.
@@ -157,48 +156,60 @@ class UniformDroplet:
     def vapour_pressure(self):
         """Vapour pressure at gas-liquid boundary in Pascals."""
         return self.solution.solvent_activity(self.mass_fraction_solute) * self.solution.solvent.equilibrium_vapour_pressure(self.temperature)
+        #Kevin effect implementation
+        #return kelvin_effect(self.solution.solvent.surface_tension(self.temperature),
+        #                     self.solution.solvent.density(self.temperature),
+        #                     self.solution.solvent.molar_mass,
+        #                     self.temperature,
+        #                     self.solution.solvent_activity(self.mass_fraction_solute) * self.solution.solvent.equilibrium_vapour_pressure(self.temperature),
+        #                     self.radius)
+        
+    @property
+    def surface_solvent_activity(self):
+        """Solvent activity at surface."""
+        return self.solution.solvent_activity(self.mass_fraction_solute)
 
     @property
     def speed(self):
         """Magnitude of velocity vector in metres/second."""
         return np.linalg.norm(self.velocity)
 
-    '''@property
-    def jet_velocity(self):
+    # @property
+    # def jet_velocity(self):
 
-        jet_initial_velocity = np.array([1,0,0]) * self.jet_initial_speed
-        
-        
-        jet_dispersion_distance = 6.8 #assuming 6.8 from Xie paper   
-        jet_centreline_speed = (jet_initial_speed * jet_dispersion_distance) / (self.position[0] / self.aperture_diameter) 
-        
-        jet_radial_velocity = 1
-        jet_axial_velocity = 1
-        
-        theta = np.arctan2(self.position[2], self.position[0])
-        r = np.linalg.norm(self.position)
-        jet_velocity = np.array([1,
-                                 0,
-                                 3])
-        
-        
-        jet_centreline_temperature = self.environment.temperature + (self.jet_initial_temperature - self.environment.temperature) *
-        
-                                    (5 / s_bar) * np.sqrt(self.jet_initial_temperature / self.environment.temperature)
-        
-        
-        #This assumes that the closest point on the centreline wil be vertically above or below the droplet 
-        jet_centreline_position = np.array([self.position[0], 0
-                                            np.sqrt(self.aperture_area ) * 0.0354 * self.jet_archimedes_number * 
-                                            (self.position[0] / np.sqrt(self.aperture_area) ) ** 3 *
-                                            np.sqrt(self.jet_initial_temperature / self.environment.temperature) ])
-        return 0'''
+    #     jet_initial_velocity = np.array([1,0,0]) * self.jet_initial_speed
+
+
+    #     jet_dispersion_distance = 6.8 #assuming 6.8 from Xie paper
+    #     jet_centreline_speed = (jet_initial_speed * jet_dispersion_distance) / (self.position[0] / self.aperture_diameter)
+
+    #     jet_radial_velocity = 1
+    #     jet_axial_velocity = 1
+
+    #     theta = np.arctan2(self.position[2], self.position[0])
+    #     r = np.linalg.norm(self.position)
+    #     jet_velocity = np.array([1,
+    #                              0,
+    #                              3])
+
+
+    #     jet_centreline_temperature = self.environment.temperature + (self.jet_initial_temperature - self.environment.temperature) *
+
+    #                                 (5 / s_bar) * np.sqrt(self.jet_initial_temperature / self.environment.temperature)
+
+
+    #     #This assumes that the closest point on the centreline wil be vertically above or below the droplet
+    #     jet_centreline_position = np.array([self.position[0], 0
+    #                                         np.sqrt(self.aperture_area ) * 0.0354 * self.jet_archimedes_number *
+    #                                         (self.position[0] / np.sqrt(self.aperture_area) ) ** 3 *
+    #                                         np.sqrt(self.jet_initial_temperature / self.environment.temperature) ])
+    #     return 0
 
     @property
     def relative_velocity(self):
         """Velocity relative to environment in metres/second."""
-        #return self.velocity - self.environment.velocity
-        return self.velocity - self.jet.velocity
+        return self.velocity - self.environment.velocity
+        #return self.velocity - self.jet.velocity
 
     @property
     def relative_speed(self):
@@ -212,9 +223,9 @@ class UniformDroplet:
         if Re > 1000: return 0.424
         elif Re < 1e-12: return np.inf
         else: return (24 / Re) * (1 + Re**(2/3) / 6)
-        
-        
-    '''@property
+
+
+    @property
     def aperture_diameter(self):
         """"meters"""
         return 0.02
@@ -223,21 +234,20 @@ class UniformDroplet:
     def aperture_area(self):
         """"m^2"""
         return self.aperture_diameter ** 2
-                
+
     @property
     def jet_initial_temperature(self):
         return body_temperature
-    
+
     @property
     def jet_initial_speed(self):
         return 1
-    
-    @property
-    def jet_archimedes_number(self):
-        """""""
-        return np.linalg.norm(self.gravity) * np.sqrt(aperture_area) * volumetric_expansion_coeffcient * 
-                                    (self.jet_initial_temperature - self.environment.temperature) * / self.jet_initial_speed ** 2'''
 
+    # @property
+    # def jet_archimedes_number(self):
+    #     """""""
+    #     return np.linalg.norm(self.gravity) * np.sqrt(aperture_area) * volumetric_expansion_coeffcient *
+    #                                 (self.jet_initial_temperature - self.environment.temperature) * / self.jet_initial_speed ** 2
 
     @property
     def reynolds_number(self):
@@ -291,9 +301,9 @@ class UniformDroplet:
 
         I = np.log((self.environment.pressure - self.vapour_pressure) /
                    (self.environment.pressure - self.environment.vapour_pressure))
-        
+
         return 4*np.pi*self.radius * self.environment.density * (self.solution.solvent.molar_mass / self.environment.molar_mass) * D_eff * Sh * I
-    
+
     @property
     def dTdt(self):
         """Time derivative of temperature from heat flux at the surface in K/s."""
@@ -378,7 +388,10 @@ class UniformDroplet:
         """Create an identical copy of this droplet."""
         return self.virtual_droplet(self.state.copy())
 
-    def integrate(self, t, dt=1e-4, terminate_on_equilibration=False, eps=1e-4):
+    def integrate(self, t, rtol=1e-8,
+                  terminate_on_equilibration=False, equ_threshold=1e-4,
+                  terminate_on_efflorescence=False, eff_threshold=0.5,
+                  first_step=1e-12):
         """Integrate the droplet state forward in time.
 
         This solves an initial value problem with the current state as the initial conditions.
@@ -386,34 +399,41 @@ class UniformDroplet:
 
         Args:
             t: total time to integrate over (s).
-            dt: maximum timestep between frames in trajectory (s).
-                NB: if numerical artifacts occur in the resulting trajectory, that suggests this parameter
-                needs to be decreased.
-            terminate_on_equilibration (default=False): if True, then the integration will stop if the
-                evaporation rate falls below eps * the initial mass
-            eps: threshold to use for the equilibration termination criterion.
+            rtol: relative tolerance used to set dynamic integration timestep between frames in
+                trajectory (s). Smaller tolerance means a more accurate integration.
+                NB: if numerical artifacts occur in the resulting trajectory, that suggests this
+                parameter needs to be decreased.
+            terminate_on_equilibration (default=False): if True, then the integration will stop if
+                the evaporation rate falls below eps * the initial mass
+            equ_threshold: threshold to use for the equilibration termination criterion.
+            terminate_on_efflorescence (default=False): if True, then the integration will stop if
+                the solvent activity falls below a threshold.
+            eff_threshold: threshold to use for the efflorescence termination criterion.
+            first_step: size of initial integration step. The subsequent timesteps are determined
+                dynamically based on the rate of change and the error tolerance parameter rtol.
         Returns:
             Trajectory of historical droplets showing how it reaches the new state.
         """
         from scipy.integrate import solve_ivp
 
-        events = None
+        events = []
         if terminate_on_equilibration:
             m0 = self.mass
-            equilibrated = lambda t,x: np.abs(self.virtual_droplet(x).dmdt) - eps*m0
+            equilibrated = lambda t,x: np.abs(self.virtual_droplet(x).dmdt) - equ_threshold*m0
             equilibrated.terminal = True
-            events = [equilibrated]
+            events += [equilibrated]
+
+        if terminate_on_efflorescence:
+            efflorescing = lambda t,x: self.virtual_droplet(x).surface_solvent_activity - eff_threshold
+            efflorescing.terminal = True
+            events += [efflorescing]
 
         dxdt = lambda t,x: self.virtual_droplet(x).dxdt
-        '''
-        temporarily commented out thhis try except pair
-        '''
-        #try:
-        #with np.errstate(divide='raise', invalid='raise'):
-        trajectory = solve_ivp(dxdt, (0, t), self.state, max_step=dt, events=events)
-        #except:
-            #raise RuntimeError('an unknown error occurred during the simulation - try running again with a smaller timestep') from None
-
+        try:
+            with np.errstate(divide='raise', invalid='raise'):
+                trajectory = solve_ivp(dxdt, (0, t), self.state, first_step=first_step, rtol=rtol, events=events)
+        except Exception as e:
+            raise RuntimeError('an error ("%r") occurred during the simulation that we don\'t know how to handle - try running again with a smaller rtol' % e) from None
 
         self.state = trajectory.y[:,-1]
         return trajectory
@@ -426,7 +446,7 @@ class UniformDroplet:
             trajectory: the output of UniformDroplet.integrate, which gives the trajectory of independent
                         variables only.
         Returns:
-            A pandas dataframe detailing the complete droplet history. 
+            A pandas dataframe detailing the complete droplet history.
         """
 
         variables = self.complete_state
@@ -442,12 +462,10 @@ class UniformDroplet:
         variables['time'] = trajectory.t
 
         return pd.DataFrame(variables)
-# -
 
 # # 3.2. Example: running a droplet simulation from raw python code
 # This is a minimal working example of how you might use the previously defined class to run a simulation. You can modify this example to e.g. create scripts to automatically run simulations over varying conditions.
 
-# +
 if __name__ == '__main__':
     solution = aqueous_NaCl
 
@@ -471,8 +489,7 @@ if __name__ == '__main__':
                                       initial_position)
 
     time = 100 # seconds
-    timestep = 1e-2 # seconds
-    trajectory = droplet.integrate(time, timestep, terminate_on_equilibration=True)
+    trajectory = droplet.integrate(time, terminate_on_equilibration=True)
     # Obtain a table giving a history of *all* droplet parameters.
     history = droplet.complete_trajectory(trajectory)
 
@@ -480,4 +497,5 @@ if __name__ == '__main__':
     plt.xlabel('time / s')
     plt.ylabel('radius / m')
     plt.show()
-# -
+
+

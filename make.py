@@ -8,7 +8,8 @@ files = ['src/preamble.py',
          'src/gas.py',
          'src/droplet.py',
          'src/gui.py',
-         'src/equations.py']
+         'src/equations.py',
+	 'src/benchmarking.py']
 source = []
 for path in files:
     with open(path) as f:

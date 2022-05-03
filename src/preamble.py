@@ -5,13 +5,17 @@
 # +
 from dataclasses import dataclass
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib as mpl, matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import pandas as pd
 from scipy.optimize import curve_fit
+import chemicals
+
 
 # Set up the notebook so that the plots look about the right size.
 # %matplotlib inline
 #plt.rcParams['figure.figsize'] = [9.5, 6]
+
 figure_width = 360 / 25.4 #conversion to mm is 25.4
 figure_height = 222.48 / 25.4 #conversion to mm is 25.4
 figure_size = (figure_width, figure_height)
