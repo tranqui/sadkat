@@ -10,7 +10,7 @@ import pandas as pd
 from scipy.optimize import curve_fit
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from mpl_toolkits.mplot3d import Axes3D
-import cheimicals
+import chemicals
 import os
 
 from matplotlib.patches import Patch
