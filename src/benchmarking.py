@@ -1747,23 +1747,6 @@ if __name__ == '__main__':
     # Obtain a table giving a history of *all* droplet parameters.
     history_d_half = droplet.complete_trajectory(trajectory)
 
-    droplet, trajectory = simulate(NaCl_10pctRH_t,
-                                   aqueous_NaCl_d_water,
-                                   T,
-                                   RH,
-                                   NaCl_10pctRH_R_0[0],
-                                   T,
-                                   mfs,
-                                   initial_position = np.array([0.1/1e3, 0, 1/1e3]),
-                                   initial_velocity = np.array([NaCl_10pctRH_v_x0[0],
-                                                                0,
-                                                                NaCl_10pctRH_v_y0[0]]),
-                                   gravity = np.array([0, 0, 9.80665]),
-                                   gas_velocity = np.array([0,0,NaCl_10pctRH_gas_flow]),
-                                   terminate_on_equilibration=False)
-    # Obtain a table giving a history of *all* droplet parameters.
-    history_d_water = droplet.complete_trajectory(trajectory)
-
 
 # ## R_0, V_x & V_y sensitivity
 
