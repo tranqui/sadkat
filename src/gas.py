@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # + ignore="True"
 from solutes import *
 # -
@@ -77,10 +78,9 @@ def Atmosphere(temperature,
 
 # Sanity check parameterisations of Earth's atmosphere by plotting key quantities below:
 
-# +
 if __name__ == '__main__':
     T_C = np.linspace(0, 100, 101)
-    fig, (ax1, ax2) = plt.subplots(ncols=2)
+    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
 
     first = True
     for RH in np.linspace(0, 1, 6):
@@ -104,5 +104,84 @@ if __name__ == '__main__':
     ax2.set_ylabel('thermal conductivity of air (mW/m/K)')
 
     plt.show()
-# -
+
+    from matplotlib.collections import LineCollection
+
+    T_C = np.linspace(0, 100, 101)
+    fig, (ax1, ax2) = plt.subplots(ncols=2, figsize = figure_size, dpi = resolution)
+
+    cmap = mpl.cm.plasma_r
+
+    norm = mpl.colors.Normalize(vmin=0, vmax=1)
+    colors = cmap(np.linspace(0, 1, 101))
+
+    #first = True
+    for RH, color in zip(np.linspace(0, 1, 101), colors):
+        #label=('%.1f' % RH)
+        #if first:
+            #label = 'RH=%s' % label
+            #first = False
+
+        rho = [Atmosphere(T+T_freezing, RH).density for T in T_C]
+        lwidths=(T_C/50)[:-1]
+        points = np.array([T_C+T_freezing, rho]).T.reshape(-1, 1, 2)
+        segments = np.concatenate([points[:-1], points[1:]], axis=1)
+        lc = LineCollection(segments, linewidths=lwidths,color=color)
+        ax1.add_collection(lc)
+        ax1.plot(T_C + T_freezing, rho, color = color, lw = 0 , label=label)
+
+    #ax1.legend(loc='best')
+    ax1.set_xlabel('T / K')
+    ax1.set_ylabel('Density / kgm$^{-3}$')
+    fig.colorbar(mpl.cm.ScalarMappable(mpl.colors.Normalize(vmin=0, vmax=100), cmap), ax = ax1,
+                 orientation = 'horizontal', label = 'Relative Humidity / %')
+
+
+    ax2.plot(T_C + T_freezing, 1e3*thermal_conductivity_air(T_C + T_freezing), lw = 3, color = 'k')
+    ax2.set_xlim([min(T_C + T_freezing), max(T_C + T_freezing)])
+    #ax2.set_ylim([0, 100])
+    ax2.set_xlabel('T / K')
+    ax2.set_ylabel('Thermal Conductivity / mWm$^{-1}$K$^{-1}$')
+
+    plt.show()
+
+    from matplotlib.collections import LineCollection
+
+    T_C = np.linspace(0, 100, 101)
+    fig, (ax1, ax2) = plt.subplots(ncols=2, figsize = figure_size, dpi = resolution)
+
+    cmap = mpl.cm.plasma_r
+
+    norm = mpl.colors.Normalize(vmin=0, vmax=1)
+    colors = cmap(np.linspace(0, 1, 101))
+
+    #first = True
+    for RH, color in zip(np.linspace(0, 1, 101), colors):
+        #label=('%.1f' % RH)
+        #if first:
+            #label = 'RH=%s' % label
+            #first = False
+
+        rho = [Atmosphere(T+T_freezing, RH).density for T in T_C]
+        lwidths=(T_C/50)[:-1]
+        points = np.array([T_C+T_freezing, rho]).T.reshape(-1, 1, 2)
+        segments = np.concatenate([points[:-1], points[1:]], axis=1)
+        lc = LineCollection(segments, linewidths=lwidths,color=color)
+        ax1.add_collection(lc)
+        ax1.plot(T_C + T_freezing, rho, color = color, lw = 0 , label=label)
+
+    #ax1.legend(loc='best')
+    ax1.set_xlabel('T$_{gas}$ / K')
+    ax1.set_ylabel('Density / kgm$^{-3}$')
+    fig.colorbar(mpl.cm.ScalarMappable(mpl.colors.Normalize(vmin=0, vmax=100), cmap), ax = ax1,
+                 orientation = 'horizontal', label = 'Relative Humidity / %')
+
+
+    ax2.plot(T_C + T_freezing, 1e3*thermal_conductivity_air(T_C + T_freezing), lw = 3, color = 'k')
+    ax2.set_xlim([min(T_C + T_freezing), max(T_C + T_freezing)])
+    #ax2.set_ylim([0, 100])
+    ax2.set_xlabel('T$_{gas}$ / K')
+    ax2.set_ylabel('Thermal Conductivity / mWm$^{-1}$K$^{-1}$')
+
+    plt.show()
 

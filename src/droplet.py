@@ -8,7 +8,6 @@ from gas import *
 
 # # 3.1. Definition
 
-# +
 @dataclass
 class UniformDroplet:
     """This class completely describes the state of the droplet during its evolution.
@@ -157,7 +156,14 @@ class UniformDroplet:
     def vapour_pressure(self):
         """Vapour pressure at gas-liquid boundary in Pascals."""
         return self.solution.solvent_activity(self.mass_fraction_solute) * self.solution.solvent.equilibrium_vapour_pressure(self.temperature)
-
+        #Kevin effect implementation
+        #return kelvin_effect(self.solution.solvent.surface_tension(self.temperature),
+        #                     self.solution.solvent.density(self.temperature),
+        #                     self.solution.solvent.molar_mass,
+        #                     self.temperature,
+        #                     self.solution.solvent_activity(self.mass_fraction_solute) * self.solution.solvent.equilibrium_vapour_pressure(self.temperature),
+        #                     self.radius)
+        
     @property
     def surface_solvent_activity(self):
         """Solvent activity at surface."""
@@ -456,12 +462,10 @@ class UniformDroplet:
         variables['time'] = trajectory.t
 
         return pd.DataFrame(variables)
-# -
 
 # # 3.2. Example: running a droplet simulation from raw python code
 # This is a minimal working example of how you might use the previously defined class to run a simulation. You can modify this example to e.g. create scripts to automatically run simulations over varying conditions.
 
-# +
 if __name__ == '__main__':
     solution = aqueous_NaCl
 
@@ -493,4 +497,5 @@ if __name__ == '__main__':
     plt.xlabel('time / s')
     plt.ylabel('radius / m')
     plt.show()
-# -
+
+

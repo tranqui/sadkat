@@ -695,11 +695,12 @@ if __name__ == '__main__':
                  initial_velocity = np.zeros(3), # metres/second
                  initial_position = np.zeros(3), # metres/second
                  gravity = np.zeros(3),
+                 gas_velocity = np.zeros(3),
                  rtol=1e-8,
                  terminate_on_equilibration=True, equ_threshold=1e-4,
                  terminate_on_efflorescence=False, eff_threshold=0.5):
 
-        gas = Atmosphere(ambient_temperature, ambient_RH)
+        gas = Atmosphere(ambient_temperature, ambient_RH, velocity= gas_velocity)
         droplet = UniformDroplet.from_mfs(solution,
                                           gas,
                                           gravity,

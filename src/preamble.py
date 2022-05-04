@@ -8,7 +8,13 @@ import numpy as np
 import matplotlib as mpl, matplotlib.pyplot as plt
 import pandas as pd
 from scipy.optimize import curve_fit
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from mpl_toolkits.mplot3d import Axes3D
+import cheimicals
+import os
 
+from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
 
 # Set up the notebook so that the plots look about the right size.
 # %matplotlib inline

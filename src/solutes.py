@@ -102,14 +102,14 @@ if __name__ == '__main__':
     mfs = np.linspace(0, 1, 100)
     aw = np.linspace(0, 1, 100)
 
-    fig, (ax1, ax2) = plt.subplots(ncols=2)
+    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
 
     ax1.plot(mfs, forward_fit.solvent_activity_from_mass_fraction_solute(mfs), label='regular fit')
-    ax1.plot(forward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, label='inverted fit')
+    ax1.plot(forward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, ls = '--', label='inverted fit')
     ax1.legend(loc='best')
     ax1.set_title('forward parameterisation')
 
-    ax2.plot(backward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, label='regular fit')
+    ax2.plot(backward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, ls = '--', label='regular fit')
     ax2.plot(mfs, backward_fit.solvent_activity_from_mass_fraction_solute(mfs), label='inverted fit')
     ax2.legend(loc='best')
     ax2.set_title('backward parameterisation')
@@ -234,55 +234,149 @@ class VolumeAdditivityFit:
 
 # -
 
+# Extracting E-AIM data
+
+if __name__ == '__main__':
+
+    #Useful functions for extracting E-AIM data
+
+    def rename_columns(df):
+        '''Takes a df with the headings from E-AIM and makes the columns nice for using in pandas.
+        Gets rid of (aq), (g) and spaces.
+        Returns a list of columns'''
+        return df.columns.str.strip().str.replace(' ', '_').str.replace('\(aq\)', '').str.replace('\(g\)', '')
+
+    def get_mfs_from_molality (molality_series, solute_molar_mass):
+        '''Takes molality data of a species - *THIS MUST MATCH THE MOLALITY OF THE SOLUTE*
+            i.e. n_species = n_solute. e.g. for MgCl_2, must use molality_Mg.
+           Takes molar mass of solute in g/mol.
+           Returns mass fraction series.'''
+        return 1 / ( 1 + (1 / (molality_series * solute_molar_mass * 1e-3)))
+
+    def get_water_activity(df):
+        return df.f_H2O * df.x_H2O
+
+    def fit_eaim_activity(mfs, activity, degree):
+        """Perform a fit of solvent activity (a) vs mass fraction of solute (mfs) on some reference data.
+
+        We constrain the fit so that a(mfs=0) = 1 and a(mfs=1) = 0, the physically correct limits.
+        The resulting polynomial fit then has the form:
+
+            a = c_0 + c_1 * mfs + c_2 * mfs**2 + ... + c_(n-1) * mfs**(n-1) + c_n * mfs**n
+
+        where c_0 = 1 and c_n = -\sum_{i=0}^{n-1} c_i in order to have the correct limits.
+
+        Args:
+            mfs: reference mass fraction of solute.
+            activity: reference solvent activity.
+            degree: degree of polynomial fit.
+        Returns:
+            The fit function.
+
+        Credit: Joshua Robinson
+        """
+
+        coefficients = lambda x: np.concatenate([[-1-np.sum(x)], x, [1]])
+        fit_func = lambda mfs,*x: np.polyval(coefficients(x), mfs)
+        fit = curve_fit(fit_func, mfs, activity, p0=np.zeros(degree-1))[0]
+        print(coefficients(fit))
+        return lambda mfs: fit_func(mfs, *fit)
+
+if __name__ == '__main__':
+    df_NaCl_EAIM = pd.read_csv('src/NaCl_all.csv')
+    df_NaCl_EAIM.columns = rename_columns(df_NaCl_EAIM)
+
+    Mr_NaCl = 58.44277
+    df_NaCl_EAIM['mfs_NaCl'] = get_mfs_from_molality(df_NaCl_EAIM.m_Na, Mr_NaCl)
+    df_NaCl_EAIM['a_w'] = get_water_activity(df_NaCl_EAIM)
+
+if __name__ == '__main__':
+
+    aqueous_NaCl = Solution(Water, 58.44, 2, 0.3, 2170,
+                            DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
+
+    # Warning: besides the density fits, the parameters below for DLF/AS are just dummy placeholder values
+    #          as far as I am aware.
+
+    aqueous_NaCl_a_ideal = Solution(Water, 58.44, 2, 0.3, 2170,
+                                DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]),
+                                )
+
+    aqueous_NaCl_d_linear = Solution(Water, 58.44, 2, 0.3, 2170,
+                                    DensityVsMassFractionFit([998.2 ,1162]),
+                                    ActivityVsMfsParameterisation(np.flipud([48.5226539, -158.04388699, 186.59427048, -93.88696437, 19.28939256, -2.99894206, -0.47652352, 1.])))
+
+    aqueous_NaCl_d_half = Solution(Water, 58.44, 2, 0.3, 2170,
+                                    DensityVsMassFractionFit([998.2 , 0.5 * -55.33776, 0.5 * 1326.69542, 0.5 * -2131.05669, 0.5 * 2895.88613, 0.5 * -940.62808]),
+                                    ActivityVsMfsParameterisation(np.flipud([48.5226539, -158.04388699, 186.59427048, -93.88696437, 19.28939256, -2.99894206, -0.47652352, 1.])))
+
+    aqueous_DLF  = Solution(Water,  1.00, 2, 1.0, 1700,
+                            DensityVsMassFractionFit([995.78, 262.92   , -606.15   ,  1135.53   ,    0      ,    0]))
+
+    aqueous_AS   = Solution(Water,  1.00, 2, 1.0, 1200,
+                            DensityVsMassFractionFit([997   , -43.88148,  397.75347,  -100.99474,    0      ,    0]))
+
+    #dummy solute properties - USE ONLY AS PURE SOLVENT - mfs = 0
+    ethanolic_NaCl = Solution(Ethanol, 58.44, 2, 0.3, 2170,
+                            DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
+
+    #dummy solute properties - USE ONLY AS PURE SOLVENT
+    propanolic_NaCl = Solution(Propanol, 58.44, 2, 0.3, 2170,
+                            DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
+
+    #dummy solute properties - USE ONLY AS PURE SOLVENT
+    butanolic_NaCl = Solution(Butanol, 58.44, 2, 0.3, 2170,
+                            DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
+
+    all_solutions = {'NaCl in water': aqueous_NaCl,
+                     'DLF in water': aqueous_DLF,
+                     'AS in water': aqueous_AS,
+                     'NaCl in ethanol' : ethanolic_NaCl,
+                     'NaCl in propanol' : propanolic_NaCl,
+                     'NaCl in butanol' : butanolic_NaCl}
+
+    # Identical versions of the above solutions but with a simpler density parameterisation (volume additivity):
+    from copy import copy
+    all_solutions_volume_additivity = {}
+    for label, solution in all_solutions.items():
+        additive_solution = copy(solution)
+        rho1, rho2 = solution.density(0), solution.solid_density
+        additive_solution.density = VolumeAdditivityFit(rho1, rho2)
+        all_solutions_volume_additivity[label] = additive_solution
+
+if __name__ == '__main__':
+
+    mfs = np.linspace(0, 1, 100)
+    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
+
+    label = 'NaCl in water'
+    additive_solute = all_solutions_volume_additivity[label]
+
+    ax1.plot(mfs,aqueous_NaCl.density(mfs), lw = 5, color = '#E66100', zorder = 0, label = 'Fit')
+    ax1.scatter(df_NaCl_EAIM.mfs_NaCl, 1000 * df_NaCl_EAIM.Density, s = 10, color = '#5D3A9B', label = 'E-AIM')
+
+    ax1.set_xlabel('MFS')
+    ax1.set_ylabel('density (kg/m$^3$)')
+    ax1.legend()
+
+    aw = np.linspace(0, 1, 100)
+
+    ax2.plot(mfs,aqueous_NaCl.solvent_activity(mfs), lw = 5, color = '#E66100', zorder = 0, label = 'Fit')
+    ax2.scatter(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, s = 10, color = '#5D3A9B', label = 'E-AIM')
+
+    ax2.set_xlabel('MFS')
+    ax2.set_ylabel('solvent activity')
+    ax2.legend()
+
+    plt.show()
+
 #  Parameterisations of some common solutes dissolved in water:
-
-# +
-aqueous_NaCl = Solution(Water, 58.44, 2, 0.3, 2170,
-                        DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
-
-# Warning: besides the density fits, the parameters below for DLF/AS are just dummy placeholder values
-#          as far as I am aware.
-
-aqueous_DLF  = Solution(Water,  1.00, 2, 1.0, 1700,
-                        DensityVsMassFractionFit([995.78, 262.92   , -606.15   ,  1135.53   ,    0      ,    0]))
-
-aqueous_AS   = Solution(Water,  1.00, 2, 1.0, 1200,
-                        DensityVsMassFractionFit([997   , -43.88148,  397.75347,  -100.99474,    0      ,    0]))
-
-#dummy solute properties - USE ONLY AS PURE SOLVENT - mfs = 0
-ethanolic_NaCl = Solution(Ethanol, 58.44, 2, 0.3, 2170,
-                        DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
-
-#dummy solute properties - USE ONLY AS PURE SOLVENT
-propanolic_NaCl = Solution(Propanol, 58.44, 2, 0.3, 2170,
-                        DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
-
-#dummy solute properties - USE ONLY AS PURE SOLVENT
-butanolic_NaCl = Solution(Butanol, 58.44, 2, 0.3, 2170,
-                        DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
-
-all_solutions = {'NaCl in water': aqueous_NaCl,
-                 'DLF in water': aqueous_DLF,
-                 'AS in water': aqueous_AS,
-                 'NaCl in ethanol' : ethanolic_NaCl,
-                 'NaCl in propanol' : propanolic_NaCl,
-                 'NaCl in butanol' : butanolic_NaCl}
-
-# Identical versions of the above solutions but with a simpler density parameterisation (volume additivity):
-from copy import copy
-all_solutions_volume_additivity = {}
-for label, solution in all_solutions.items():
-    additive_solution = copy(solution)
-    rho1, rho2 = solution.density(0), solution.solid_density
-    additive_solution.density = VolumeAdditivityFit(rho1, rho2)
-    all_solutions_volume_additivity[label] = additive_solution
-# -
 
 # Sanity check the parameterisations of the solutions by plotting some of their properties below:
 
 if __name__ == '__main__':
     mfs = np.linspace(0, 1, 100)
-    fig, (ax1, ax2) = plt.subplots(ncols=2)
+    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
 
     for label, solute in all_solutions.items():
         additive_solute = all_solutions_volume_additivity[label]
@@ -305,4 +399,37 @@ if __name__ == '__main__':
     ax2.legend(loc='best')
 
     plt.show()
+
+
+if __name__ == '__main__':
+
+    mfs = np.linspace(0, 1, 100)
+    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
+
+    label = 'NaCl in water'
+    additive_solute = all_solutions_volume_additivity[label]
+
+    ax1.plot(mfs,aqueous_NaCl.density(mfs), lw = 2, color = '#FFC20A', zorder = 0, label = 'E-AIM Fit')
+    ax1.scatter(df_NaCl_EAIM.mfs_NaCl, 1000 * df_NaCl_EAIM.Density, s = 10, color = '#5D3A9B', label = 'E-AIM Data')
+
+    ax1.plot(mfs,aqueous_NaCl_d_linear.density(mfs), ls = '--', lw = 2, color = '#0C7BDC', zorder = 0, label = 'Linear in $\sqrt{MFS}$')
+    ax1.plot(mfs,aqueous_NaCl_d_half.density(mfs), ls = '-.', lw = 2, color = '#004D40', zorder = 0, label = r'$\frac{1}{2}$ $\times$ E-AIM Fit')
+
+    ax1.set_xlabel('MFS')
+    ax1.set_ylabel('density (kg/m$^3$)')
+    ax1.legend()
+
+    aw = np.linspace(0, 1, 100)
+
+    ax2.plot(mfs,aqueous_NaCl.solvent_activity(mfs), lw = 2, color = '#FFC20A', zorder = 0, label = 'E-AIM Fit')
+    ax2.scatter(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, s = 10, color = '#5D3A9B', label = 'E-AIM Data')
+
+    ax2.plot(mfs,aqueous_NaCl_a_ideal.solvent_activity(mfs), ls = '--', lw = 2, color = 'r', zorder = 0, label = "Raoult's Law")
+
+    ax2.set_xlabel('MFS')
+    ax2.set_ylabel('solvent activity')
+    ax2.legend()
+
+    plt.show()
+
 
