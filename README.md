@@ -31,12 +31,13 @@ This software requires the following packages:
 * [python3](https://www.python.org/downloads/), and the following packages: [numpy](https://numpy.org/), [scipy](https://scipy.org/) and [matplotlib](https://matplotlib.org/)
 * [jupyter notebook](https://jupyter.org/)
 * [jupytext](https://jupytext.readthedocs.io/en/latest/install.html)
+* [chemicals](https://chemicals.readthedocs.io/)
 
 Make sure these are installed before proceeding.
 
 If you have the python package manager [pip](https://pypi.org/project/pip/) installed, then you can install the prerequisite python libraries via:
 
-    pip install numpy scipy matplotlib jupytext
+    pip install numpy scipy matplotlib jupytext chemicals
 
 on the command line. Note this command may require administrator privileges or you must pass the additional `--user` flag.
 Alternatively, these packages are frequently bundled with scientific distributions of python, e.g. [anaconda](https://www.anaconda.com/).
