@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # + ignore="True"
 from solutes import *
 # -
@@ -59,7 +58,7 @@ def Atmosphere(temperature,
                pressure=standard_atmospheric_pressure,
                velocity=np.zeros(3)):
     """Set up conditions for Earth's atmosphere.
-    
+
     Args:
         temperature: room temperature (K)
         relative_humidity: RH of water vapour (default=0 for dry air).
@@ -184,4 +183,3 @@ if __name__ == '__main__':
     ax2.set_ylabel('Thermal Conductivity / mWm$^{-1}$K$^{-1}$')
 
     plt.show()
-

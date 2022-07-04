@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # + ignore="True"
 from droplet import *
 # -
@@ -756,7 +755,3 @@ if __name__ == '__main__':
     plt.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), label = '% RH' )
     plt.legend(loc='best')
     plt.show()
-
-
-
-

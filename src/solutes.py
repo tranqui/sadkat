@@ -128,7 +128,7 @@ class Solution:
     solubility_limit: float            # kg per kg solvent
     solid_density: float               # kg/m^3
     density: object                    # kg/m^3
-    solvent_activity_fit: object=None  # a fitting function for solvent activity (unitless) in terms of 
+    solvent_activity_fit: object=None  # a fitting function for solvent activity (unitless) in terms of
                                        # the mass fraction of solute, or None (the default) to assume
                                        # Raoult's law for ideal mixtures
 
@@ -184,7 +184,7 @@ class DensityVsMassFractionFit:
 
     def __init__(self, coefficients):
         """Construct the fitting function from a set of coefficients.
-        
+
         Args:
             coefficients: the set of coefficients in the equation above (i.e. the sequence [a,b,c,d,...] etc)
         """
@@ -432,5 +432,3 @@ if __name__ == '__main__':
     ax2.legend()
 
     plt.show()
-
-

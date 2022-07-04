@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # + ignore="True"
 from preamble import *
 # -
@@ -48,16 +47,13 @@ class VapourBinaryDiffusionCoefficient:
 
 # +
 def surface_tension(A, B, C, D, E, T_crit, T):
-    """Takes fitting parameters and tempertature (K) and returns surface tension (N/m).
+    """Takes fitting parameters and temperature (K) and returns surface tension (N/m).
     http://ddbonline.ddbst.de/DIPPR106SFTCalculation/DIPPR106SFTCalculationCGI.exe
     """
 
     T_r = T / T_crit
-
     power = B + (C * T_r) + (D * T_r ** 2) + (E * T_r ** 3)
-
     sigma = (A * (1 - T_r) ** power) / 1000 # convert from mN/m to N/m
-
 
     return sigma
 
@@ -68,12 +64,9 @@ def kelvin_effect(solvent_surface_tension, solvent_density, solvent_molar_mass, 
     """
 
     n_L = solvent_density / solvent_molar_mass
-
     P_vap_curved =  P_vap_flat * np.exp( (2 * solvent_surface_tension) / (n_L * gas_constant * T * droplet_radius))
 
     return P_vap_curved
-
-
 # -
 
 # Plot kelvin effect with approx value of surface tension and p_vap_flat and compare to reference: https://www.e-education.psu.edu/meteo300/node/676
@@ -91,23 +84,22 @@ if __name__ == '__main__':
 
 # ### 2.1.3. Properties of pure water
 
-if __name__ == '__main__':
+# +
+molar_mass_water = 18.01528 # g/mol
 
-    molar_mass_water = 18.01528 # g/mol
+def density_water(temperature):
+    """Fit for the density of pure water used in J Walker model.
 
-    def density_water(temperature):
-        """Fit for the density of pure water used in J Walker model.
+    Originally from:
 
-        Originally from:
+        Wagner and Pruss Addendum to J. Phys. Chem. Ref. Data 16, 893 (1987),
+        J. Phys. Chem. Ref. Data, 1993, 22, 783–787)
 
-            Wagner and Pruss Addendum to J. Phys. Chem. Ref. Data 16, 893 (1987),
-            J. Phys. Chem. Ref. Data, 1993, 22, 783–787)
-
-        Args:
-            temperature: temperature in Kelvin.
-        Returns:
-            The water density in kg/m^3.
-        """
+    Args:
+        temperature: temperature in Kelvin.
+    Returns:
+        The water density in kg/m^3.
+    """
         ref_T = 647.096 # K
         ref_density = 322 # kg/m^3
         b1, b2, b3, b4, b5, b6 = 1.99274064, 1.09965342, -0.510839303, -1.75493479, -45.5170352, -674694.45
@@ -120,41 +112,40 @@ if __name__ == '__main__':
 
         return density
 
-    #IAPWS-95 https://chemicals.readthedocs.io/chemicals.iapws.html
-    specific_heat_capacity_water = np.vectorize(lambda T: chemicals.iapws.iapws95_properties(T, standard_atmospheric_pressure)[5]) # J/kg/K
+#IAPWS-95 https://chemicals.readthedocs.io/chemicals.iapws.html
+specific_heat_capacity_water = np.vectorize(lambda T: chemicals.iapws.iapws95_properties(T, standard_atmospheric_pressure)[5]) # J/kg/K
 
-    # Su, PCCP (2018)
-    specific_latent_heat_water = lambda T: 3.14566e6 - 2361.64 * T # J/kg
+# Su, PCCP (2018)
+specific_latent_heat_water = lambda T: 3.14566e6 - 2361.64 * T # J/kg
 
-    def equilibrium_vapour_pressure_water(T):
-        """Using the Buck equation (from integrating the Clausius-Clapeyron equation).
+def equilibrium_vapour_pressure_water(T):
+    """Using the Buck equation (from integrating the Clausius-Clapeyron equation).
 
-        Args:
-            T: temperature in Kelvin.
-        """
-        T_C = T - T_freezing # Celsius
-        return 1e3*0.61161 * np.exp((18.678 - (T_C / 234.5)) * (T_C / (257.14 + T_C))) # Pa
-
-        return P
+    Args:
+        T: temperature in Kelvin.
+    """
+    T_C = T - T_freezing # Celsius
+    return 1e3*0.61161 * np.exp((18.678 - (T_C / 234.5)) * (T_C / (257.14 + T_C))) # Pa
 
 
-    def surface_tension_water(T):
-        """ parameters from     http://ddbonline.ddbst.de/DIPPR106SFTCalculation/DIPPR106SFTCalculationCGI.exe
+def surface_tension_water(T):
+    """ parameters from     http://ddbonline.ddbst.de/DIPPR106SFTCalculation/DIPPR106SFTCalculationCGI.exe
             Tc  	 Tmin 	 Tmax
             647.3 	 233 	 643
             A,B,C,D,E = 134.15,1.6146,-2.035,1.5598,0
-        """
+    """
 
-        return surface_tension(134.15,1.6146,-2.035,1.5598,0, 647.3, T)
+    return surface_tension(134.15,1.6146,-2.035,1.5598,0, 647.3, T)
 
 
-    Water = Solvent(molar_mass_water,
-                    density_water,
-                    specific_heat_capacity_water,
-                    specific_latent_heat_water,
-                    equilibrium_vapour_pressure_water,
-                    VapourBinaryDiffusionCoefficient(0.2190e-4, T_freezing, 1.81),
-                    surface_tension_water)
+Water = Solvent(molar_mass_water,
+                density_water,
+                specific_heat_capacity_water,
+                specific_latent_heat_water,
+                equilibrium_vapour_pressure_water,
+                VapourBinaryDiffusionCoefficient(0.2190e-4, T_freezing, 1.81),
+                surface_tension_water)
+# -
 
 # Sanity check the water properties by plotting them below:
 
@@ -182,7 +173,6 @@ if __name__ == '__main__':
         axes[2][1].set_ylabel(r'$\sigma$ / mNm$^{-1}$')
 
         plt.show()
-        return
 
 if __name__ == '__main__':
     plot_solvent_properties(Water)
@@ -315,7 +305,7 @@ for name, colour in zip(['methyl_alcohol', 'ethyl_alcohol', 'propyl_alcohol', 'b
                                                                                yaws_alcohols[name]['A'],
                                                                                yaws_alcohols[name]['B'],
                                                                                yaws_alcohols[name]['C']))
-    
+
 for name, colour in zip(['methyl_alcohol', 'ethyl_alcohol', 'propyl_alcohol', 'butanol', 'pentanol' ], colours_list):
     plt.plot(T_C,
              vapour_binary_diffusion_coefficeint_func(T_C + T_freezing,
@@ -327,7 +317,7 @@ for name, colour in zip(['methyl_alcohol', 'ethyl_alcohol', 'propyl_alcohol', 'b
              label = str(name) + ' fit')
 
 
-    
+
 plt.legend(ncol = 2)
 plt.xlabel('T (℃)')
 plt.ylabel('$D_\infty$ (m$^2$/s)')

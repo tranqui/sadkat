@@ -156,14 +156,14 @@ class UniformDroplet:
     def vapour_pressure(self):
         """Vapour pressure at gas-liquid boundary in Pascals."""
         return self.solution.solvent_activity(self.mass_fraction_solute) * self.solution.solvent.equilibrium_vapour_pressure(self.temperature)
-        #Kevin effect implementation
+        # Kelvin effect implementation
         #return kelvin_effect(self.solution.solvent.surface_tension(self.temperature),
         #                     self.solution.solvent.density(self.temperature),
         #                     self.solution.solvent.molar_mass,
         #                     self.temperature,
         #                     self.solution.solvent_activity(self.mass_fraction_solute) * self.solution.solvent.equilibrium_vapour_pressure(self.temperature),
         #                     self.radius)
-        
+
     @property
     def surface_solvent_activity(self):
         """Solvent activity at surface."""
@@ -469,7 +469,7 @@ class UniformDroplet:
 if __name__ == '__main__':
     solution = aqueous_NaCl
 
-    ambient_temperature = 293 # Kelvin
+    ambient_temperature = 293 # kelvin
     ambient_RH = 0.1
     gas = Atmosphere(ambient_temperature, ambient_RH)
 
@@ -497,5 +497,3 @@ if __name__ == '__main__':
     plt.xlabel('time / s')
     plt.ylabel('radius / m')
     plt.show()
-
-

@@ -62,4 +62,3 @@ molar_mass_dry_air = 28.9647                # g/mol
 
 gravitational_acceleration = 9.80665        # m/s^2
 # -
-
