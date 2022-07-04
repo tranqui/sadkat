@@ -149,7 +149,7 @@ Water = Solvent(molar_mass_water,
 
 if __name__ == '__main__':
     def plot_solvent_properties(solvent, T = np.linspace(T_freezing, T_freezing + 99.9, 201)):
-        fig, axes = plt.subplots(ncols = 2, nrows = 3, sharex = True, dpi = resolution, figsize = (figure_width, figure_height * 2))
+        fig, axes = plt.subplots(ncols = 2, nrows = 3, sharex = True)
         plt.subplots_adjust(hspace=0)
 
         axes[0][0].plot(T, solvent.density(T), lw = 3, color = 'k')
@@ -280,7 +280,6 @@ plt.title('All alcohols', fontsize = 24)
 plt.xlabel('T (℃)')
 plt.ylabel('$D_\infty$ (m$^2$/s)')
 plt.title('All alcohols, Yaws parameterisations', fontsize = 24)
-plt.show()
 
 for name, colour in zip(['methyl_alcohol', 'ethyl_alcohol', 'propyl_alcohol', 'butanol', 'pentanol' ], colours_list):
     plt.plot(T_C,

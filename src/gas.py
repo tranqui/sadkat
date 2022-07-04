@@ -6,6 +6,7 @@ from solutes import *
 #
 # Data structures for describing the environment (i.e. the gas phase surrounding the droplet):
 
+# +
 @dataclass
 class Environment:
     """Class to conveniently store all parameters needed to describe the surrounding gas together."""
@@ -28,7 +29,7 @@ class Environment:
     def vapour_pressure(self):
         """Vapour pressure in Pascals."""
         return self.relative_humidity * self.solvent.equilibrium_vapour_pressure(self.temperature)
-
+# -
 
 # Specific parameterisations for the Earth's atmosphere (the main environment people will likely be considering):
 
