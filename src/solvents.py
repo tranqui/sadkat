@@ -43,7 +43,7 @@ class VapourBinaryDiffusionCoefficient:
         return self.D_ref * (T / self.T_ref)**self.lam
 # -
 
-# ### 2.1.2 Kelvin Effect
+# ### 2.1.2. Kelvin Effect
 
 # +
 def surface_tension(A, B, C, D, E, T_crit, T):
@@ -100,17 +100,15 @@ def density_water(temperature):
     Returns:
         The water density in kg/m^3.
     """
-        ref_T = 647.096 # K
-        ref_density = 322 # kg/m^3
-        b1, b2, b3, b4, b5, b6 = 1.99274064, 1.09965342, -0.510839303, -1.75493479, -45.5170352, -674694.45
+    ref_T = 647.096 # K
+    ref_density = 322 # kg/m^3
+    b1, b2, b3, b4, b5, b6 = 1.99274064, 1.09965342, -0.510839303, -1.75493479, -45.5170352, -674694.45
 
-        theta = temperature / ref_T
+    theta = temperature / ref_T
+    tau = 1 - theta
+    density = ref_density * (1 + b1*pow(tau,1/3) + b2*pow(tau,2/3) + b3*pow(tau,5/3) + b4*pow(tau,16/3) + b5*pow(tau,45/3) + b6*pow(tau,110/3))
 
-        tau = 1 - theta
-
-        density = ref_density * (1 + b1*pow(tau,1/3) + b2*pow(tau,2/3) + b3*pow(tau,5/3) + b4*pow(tau,16/3) + b5*pow(tau,45/3) + b6*pow(tau,110/3))
-
-        return density
+    return density
 
 #IAPWS-95 https://chemicals.readthedocs.io/chemicals.iapws.html
 specific_heat_capacity_water = np.vectorize(lambda T: chemicals.iapws.iapws95_properties(T, standard_atmospheric_pressure)[5]) # J/kg/K
@@ -172,8 +170,6 @@ if __name__ == '__main__':
         axes[2][1].plot(T, solvent.surface_tension(T) / 1e-3, lw = 3, color = 'k')
         axes[2][1].set_ylabel(r'$\sigma$ / mNm$^{-1}$')
 
-        plt.show()
-
 if __name__ == '__main__':
     plot_solvent_properties(Water)
 
@@ -222,10 +218,6 @@ def antoine_equation(T, A, B, C):
 
 # +
 # NIST latent heat of vapourisation parameterisation
-#
-# ![image.png](attachment:image.png)
-# -
-
 def enthalpy_vapourisation(A, alpha, beta, T_c, T):
     """Rreceived T in K and coefficients. Returns H_vap in J/mol"""
     T_r = T / T_c
@@ -306,6 +298,8 @@ for name, colour in zip(['methyl_alcohol', 'ethyl_alcohol', 'propyl_alcohol', 'b
                                                                                yaws_alcohols[name]['B'],
                                                                                yaws_alcohols[name]['C']))
 
+# +
+plt.figure()
 for name, colour in zip(['methyl_alcohol', 'ethyl_alcohol', 'propyl_alcohol', 'butanol', 'pentanol' ], colours_list):
     plt.plot(T_C,
              vapour_binary_diffusion_coefficeint_func(T_C + T_freezing,
@@ -316,22 +310,24 @@ for name, colour in zip(['methyl_alcohol', 'ethyl_alcohol', 'propyl_alcohol', 'b
              linestyle = '--',
              label = str(name) + ' fit')
 
-
-
 plt.legend(ncol = 2)
 plt.xlabel('T (℃)')
 plt.ylabel('$D_\infty$ (m$^2$/s)')
 plt.title('Selected alcohols with fits', fontsize = 24)
-plt.show()
+# -
 
-for name, colour in zip(['methyl_alcohol', 'ethyl_alcohol', 'propyl_alcohol', 'butanol', 'pentanol' ], colours_list):
-    plt.plot(T_C,
-             vapour_binary_diffusion_coefficeint_func(T_C + T_freezing,
-                                                      yaws_alcohol_diffusion_fits[name][0],
-                                                      yaws_alcohol_diffusion_fits[name][1],
-                                                      yaws_alcohol_diffusion_fits[name][2]) - yaws_diffusion_polynomial(T_C+T_freezing,
-                                                                                                                        yaws_alcohols[name]['A'],
-                                                                                                                        yaws_alcohols[name]['B'],
+if __name__ == '__main__':
+    plt.figure()
+    for name, colour in zip(['methyl_alcohol', 'ethyl_alcohol', 'propyl_alcohol', 'butanol', 'pentanol' ], colours_list):
+        plt.plot(T_C,
+                 vapour_binary_diffusion_coefficeint_func
+                 (T_C + T_freezing,
+                  yaws_alcohol_diffusion_fits[name][0],
+                  yaws_alcohol_diffusion_fits[name][1],
+                  yaws_alcohol_diffusion_fits[name][2])
+                 - yaws_diffusion_polynomial(T_C+T_freezing,
+                                                                                    yaws_alcohols[name]['A'],
+                                                                                    yaws_alcohols[name]['B'],
                                                                                                                         yaws_alcohols[name]['C']),
              color = colour,
              linestyle = '-.',
@@ -340,9 +336,6 @@ plt.legend()
 plt.xlabel('T (℃)')
 plt.ylabel('$D_\infty$ (m$^2$/s)')
 plt.title('Selected alcohols fit residuals', fontsize = 24)
-
-plt.show()
-
 # -
 
 # ### 2.1.4. Properties of pure ethannol
@@ -562,7 +555,7 @@ if __name__ == '__main__':
     plt.xlabel('T (℃)')
     plt.ylabel('Surface tension / N / m')
 
-# ### 2.1.5. Properties of pure Butanol
+# ### 2.1.6. Properties of pure Butanol
 
 # +
 molar_mass_butanol = 74.12 # g/mol
