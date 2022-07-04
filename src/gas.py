@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # + ignore="True"
 from solutes import *
 # -
