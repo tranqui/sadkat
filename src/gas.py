@@ -2,7 +2,7 @@
 from solutes import *
 # -
 
-# ## 2.3. Environmental Conditions
+# ## 2.3. Environmental conditions
 #
 # Data structures for describing the environment (i.e. the gas phase surrounding the droplet):
 

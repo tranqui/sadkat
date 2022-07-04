@@ -102,18 +102,17 @@ if __name__ == '__main__':
     mfs = np.linspace(0, 1, 100)
     aw = np.linspace(0, 1, 100)
 
-    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
     ax1.plot(mfs, forward_fit.solvent_activity_from_mass_fraction_solute(mfs), label='regular fit')
-    ax1.plot(forward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, ls = '--', label='inverted fit')
+    ax1.plot(forward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, ls='--', label='inverted fit')
     ax1.legend(loc='best')
     ax1.set_title('forward parameterisation')
 
-    ax2.plot(backward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, ls = '--', label='regular fit')
+    ax2.plot(backward_fit.mass_fraction_solute_from_solvent_activity(aw), aw, ls='--', label='regular fit')
     ax2.plot(mfs, backward_fit.solvent_activity_from_mass_fraction_solute(mfs), label='inverted fit')
     ax2.legend(loc='best')
     ax2.set_title('backward parameterisation')
-    plt.show()
 
 # Data structures for parameterising solutes:
 
@@ -348,13 +347,13 @@ if __name__ == '__main__':
 if __name__ == '__main__':
 
     mfs = np.linspace(0, 1, 100)
-    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
-    label = 'NaCl in water'
+    label='NaCl in water'
     additive_solute = all_solutions_volume_additivity[label]
 
-    ax1.plot(mfs,aqueous_NaCl.density(mfs), lw = 5, color = '#E66100', zorder = 0, label = 'Fit')
-    ax1.scatter(df_NaCl_EAIM.mfs_NaCl, 1000 * df_NaCl_EAIM.Density, s = 10, color = '#5D3A9B', label = 'E-AIM')
+    pl1, = ax1.plot(mfs,aqueous_NaCl.density(mfs), zorder=0, label='Fit')
+    pl2, = ax1.plot(df_NaCl_EAIM.mfs_NaCl, 1000 * df_NaCl_EAIM.Density, '.', label='E-AIM')
 
     ax1.set_xlabel('MFS')
     ax1.set_ylabel('density (kg/m$^3$)')
@@ -362,14 +361,12 @@ if __name__ == '__main__':
 
     aw = np.linspace(0, 1, 100)
 
-    ax2.plot(mfs,aqueous_NaCl.solvent_activity(mfs), lw = 5, color = '#E66100', zorder = 0, label = 'Fit')
-    ax2.scatter(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, s = 10, color = '#5D3A9B', label = 'E-AIM')
+    ax2.plot(mfs,aqueous_NaCl.solvent_activity(mfs), c=pl1.get_color(), zorder=0, label='Fit')
+    ax2.plot(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, '.', c=pl2.get_color(), label='E-AIM')
 
     ax2.set_xlabel('MFS')
     ax2.set_ylabel('solvent activity')
     ax2.legend()
-
-    plt.show()
 
 #  Parameterisations of some common solutes dissolved in water:
 
@@ -377,7 +374,7 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     mfs = np.linspace(0, 1, 100)
-    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
     for label, solute in all_solutions.items():
         additive_solute = all_solutions_volume_additivity[label]
@@ -399,22 +396,20 @@ if __name__ == '__main__':
     ax2.set_ylabel('solvent activity')
     ax2.legend(loc='best')
 
-    plt.show()
-
 
 if __name__ == '__main__':
 
     mfs = np.linspace(0, 1, 100)
-    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
-    label = 'NaCl in water'
+    label='NaCl in water'
     additive_solute = all_solutions_volume_additivity[label]
 
-    ax1.plot(mfs,aqueous_NaCl.density(mfs), lw = 2, color = '#FFC20A', zorder = 0, label = 'E-AIM Fit')
-    ax1.scatter(df_NaCl_EAIM.mfs_NaCl, 1000 * df_NaCl_EAIM.Density, s = 10, color = '#5D3A9B', label = 'E-AIM Data')
+    pl1, = ax1.plot(mfs,aqueous_NaCl.density(mfs), zorder=0, label='E-AIM Fit')
+    pl2, = ax1.plot(df_NaCl_EAIM.mfs_NaCl, 1000 * df_NaCl_EAIM.Density, '.', label='E-AIM Data')
 
-    ax1.plot(mfs,aqueous_NaCl_d_linear.density(mfs), ls = '--', lw = 2, color = '#0C7BDC', zorder = 0, label = 'Linear in $\sqrt{MFS}$')
-    ax1.plot(mfs,aqueous_NaCl_d_half.density(mfs), ls = '-.', lw = 2, color = '#004D40', zorder = 0, label = r'$\frac{1}{2}$ $\times$ E-AIM Fit')
+    pl3, = ax1.plot(mfs,aqueous_NaCl_d_linear.density(mfs), ls='--', zorder=0, label='Linear in $\sqrt{MFS}$')
+    pl4, = ax1.plot(mfs,aqueous_NaCl_d_half.density(mfs), ls='-.', zorder=0, label=r'$\frac{1}{2}$ $\times$ E-AIM Fit')
 
     ax1.set_xlabel('MFS')
     ax1.set_ylabel('density (kg/m$^3$)')
@@ -422,10 +417,10 @@ if __name__ == '__main__':
 
     aw = np.linspace(0, 1, 100)
 
-    ax2.plot(mfs,aqueous_NaCl.solvent_activity(mfs), lw = 2, color = '#FFC20A', zorder = 0, label = 'E-AIM Fit')
-    ax2.scatter(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, s = 10, color = '#5D3A9B', label = 'E-AIM Data')
+    ax2.plot(mfs,aqueous_NaCl.solvent_activity(mfs), c=pl1.get_color(), zorder=0, label='E-AIM Fit')
+    ax2.plot(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, '.', c=pl2.get_color(), label='E-AIM Data')
 
-    ax2.plot(mfs,aqueous_NaCl_a_ideal.solvent_activity(mfs), ls = '--', lw = 2, color = 'r', zorder = 0, label = "Raoult's Law")
+    ax2.plot(mfs,aqueous_NaCl_a_ideal.solvent_activity(mfs), ls='--', c='r', zorder=0, label="Raoult's Law")
 
     ax2.set_xlabel('MFS')
     ax2.set_ylabel('solvent activity')
