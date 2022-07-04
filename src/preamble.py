@@ -16,36 +16,6 @@ from matplotlib.lines import Line2D
 
 import chemicals
 import os
-
-# Set up the notebook so that the plots look about the right size.
-# %matplotlib inline
-#plt.rcParams['figure.figsize'] = [9.5, 6]
-
-figure_width = 360 / 25.4 #conversion to mm is 25.4
-figure_height = 222.48 / 25.4 #conversion to mm is 25.4
-figure_size = (figure_width, figure_height)
-
-resolution = 600 #dpi
-tick_size = 18
-fontlabel_size = 18
-
-params = {
-    'lines.markersize' : 2,
-    'axes.labelsize': fontlabel_size,
-    'legend.fontsize': fontlabel_size,
-    'xtick.labelsize': tick_size,
-    'ytick.labelsize': tick_size,
-    'figure.figsize': figure_size,
-    'xtick.direction':     'in',     # direction: {in, out, inout}
-    'ytick.direction':     'in',     # direction: {in, out, inout}
-    'axes.spines.top': False,
-    'axes.spines.right': False,
-    'xtick.major.pad':  8,
-    'ytick.major.pad':  8,
-    'axes.linewidth' : 1.2,
-    'font.family' : 'serif'}
-
-plt.rcParams.update(params)
 # -
 
 # ## 1.2. Standard parameters
