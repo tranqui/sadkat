@@ -36,9 +36,9 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     def trim_data(time_data, property_data):
-        '''
+        """
         Clips off first 10% and last 10% of data for calcualtion of evaporation rate.
-        '''
+        """
 
         time_start = time_data.max() * 0.1
         time_end = time_data.max() * 0.9
@@ -52,17 +52,17 @@ if __name__ == '__main__':
         return time_data, property_data
 
     def get_evaporation_rate(t, r2):
-        '''
+        """
         Takes time data and r^2 data and calculated evaporation data.
 
-        '''
+        """
         return -np.gradient(r2, t)
 
     def get_temperature_suppression(T_droplet, T_environment = 298.15):
-        '''
+        """
         Takes time data and r^2 data and calculated evaporation data.
 
-        '''
+        """
         return T_environment - T_droplet
 
 if __name__ == '__main__':
@@ -128,14 +128,10 @@ if __name__ == '__main__':
         sadkat_T_suppression.append(trim_data(dataset.time_s, dataset.delta_T_K)[1].mean())
 
     #4th order polynomial fit of sadkat k vs RH
-    sadkat_poly_model = np.poly1d(np.polyfit(sadkat_RH_list,
-                                               sadkat_k_means,
-                                               4))
+    sadkat_poly_model = np.poly1d(np.polyfit(sadkat_RH_list, sadkat_k_means, 4))
 
     #4th order polynomial fit of Su ∆T vs RH
-    sadkat_T_poly_model = np.poly1d(np.polyfit(sadkat_RH_list,
-                                           sadkat_T_suppression,
-                                           4))
+    sadkat_T_poly_model = np.poly1d(np.polyfit(sadkat_RH_list, sadkat_T_suppression, 4))
 
 if __name__ == '__main__':
     def plot_rh_dependent_data(data, RH_list,
@@ -382,21 +378,22 @@ if __name__ == '__main__':
     def load_experimental_data():
 
         # function to walk though files to find edb data and conditions
-        def list_files(dir):                                                                                                  
-            r = []                                                                                                            
-            subdirs = [x[0] for x in os.walk(dir)]                                                                            
-            for subdir in subdirs:  
+        def list_files(dir):
+            r = []
+            subdirs = [x[0] for x in os.walk(dir)]
+            for subdir in subdirs:
                 print(subdir)
                 if 'p' in subdir:
                     print('probe')
                 if 's' in subdir:
                     print('sample')
-                files = os.walk(subdir).__next__()[2]                                                                             
-                if (len(files) > 0):                                                                                          
-                    for file in files:                                                                                        
+                files = os.walk(subdir).__next__()[2]
+                if (len(files) > 0):
+
+                    for file in files:
                         r.append(os.path.join(subdir, file))
                         print(file)
-            return r 
+            return r
 
 
         #get list of experiments and make a dict
@@ -461,11 +458,11 @@ if __name__ == '__main__':
                 droplet_data = np.loadtxt(experiment_ids[key]['exp_props'].droplet_path[0]).T
                 droplet_data[1] = droplet_data[1]/1e6
 
-                '''plt.plot(droplet_data[0], droplet_data[1]**2)
+                """plt.plot(droplet_data[0], droplet_data[1]**2)
                 plt.show()
                 plt.plot(droplet_data[0], np.gradient(droplet_data[1]**2, droplet_data[0]))
                 plt.axhline(np.gradient(droplet_data[1]**2, droplet_data[0]).mean(), c= 'k')
-                plt.show()'''
+                plt.show()"""
 
                 experiment_ids[key]['exp_props']['k'][i] = -np.gradient(droplet_data[1]**2, droplet_data[0]).mean()
 
@@ -500,7 +497,7 @@ if __name__ == '__main__':
 
     history_list = []
     T_range = np.linspace(14.85 + T_freezing, 29.85 + T_freezing,16) # Kelvin
-    #T_range = np.append(T_range, np.array(T_list) + T_freezing) 
+    #T_range = np.append(T_range, np.array(T_list) + T_freezing)
     #T_range.sort()
 
     RH_range = np.linspace(0,1, 11) # % RH
@@ -518,7 +515,7 @@ if __name__ == '__main__':
             history = droplet.complete_trajectory(trajectory)
             #history_list.append(history)
             T_history_list.append(history)
-        history_list.append(T_history_list) 
+        history_list.append(T_history_list)
 
     sadkat_2d_data = history_list
     sadkat_RH_range = RH_range
@@ -547,16 +544,16 @@ if __name__ == '__main__':
             history = droplet.complete_trajectory(trajectory)
             #history_list.append(history)
             T_history_list.append(history)
-        history_list.append(T_history_list) 
+        history_list.append(T_history_list)
 
     sadkat_experiemtal_comparison_data = history_list
 
 if __name__ == '__main__':
     def get_k_surface(data_2d, temp_range, rel_humidity_range):
-        '''
+        """
         Takes list of histories generated by sadkat in format [T0[RH0...],T1[RH0...]] and respective ranges of T and RH.
         Returns evaporation rates in transposed form (easier for surface plots).
-        '''
+        """
 
         k = []
 
@@ -576,10 +573,10 @@ if __name__ == '__main__':
         return k
 
     def get_delta_T_surface(data_2d, temp_range, rel_humidity_range):
-        '''
+        """
         Takes list of histories generated by sadkat in format [T0[RH0...],T1[RH0...]] and respective ranges of T and RH.
         Returns evaporation rates in transposed form (easier for surface plots).
-        '''
+        """
 
         T_supp = []
 
@@ -609,10 +606,10 @@ if __name__ == '__main__':
 if __name__ == '__main__':
     import matplotlib.colors as colors
 
-    '''
+    """
     Source: https://www.wolframalpha.com/input/?i=a+%2B+b*x+%2B+c*y+%2B++d*x*y+%2B++e*x%5E2+%2B+f*y%5E2+%3D+0+solve+for+y
 
-    '''
+    """
 
     def RH_sol1(T, k, a, b, c, d, e, f):
         return - (np.sqrt((c+d*T)**2 - 4*f*((a-k) + T*(b + e*T))) + c + d*T) / (2*f)
@@ -624,9 +621,9 @@ if __name__ == '__main__':
         return - ((a-k) + T*(b + e*T)) / (c + d*T)
 
 
-    '''
+    """
     Source: https://www.wolframalpha.com/input/?i=a+%2B+b*x+%2B+c*y+%2B++d*x*y+%2B++e*x%5E2+%2B+f*y%5E2+%3D+0+solve+for+x
-    '''
+    """
 
     def T_sol1(T, k, a, b, c, d, e, f):
         return - (np.sqrt((b+d*T)**2 - 4*e*((a-k) + T*(c + f*T))) + b + d*T) / (2*e)
@@ -638,24 +635,24 @@ if __name__ == '__main__':
         return - ((a-k) + T*(c + f*T)) / (b + d*T)
 
     def get_constant_k_line(Temps, k, params):
-        '''Uses inverse function of surface fit, RH_sol1, to find the values of RH corresponding to given T and evaporation rate'''
+        """Uses inverse function of surface fit, RH_sol1, to find the values of RH corresponding to given T and evaporation rate"""
         return Temps[((RH_sol1(Temps, k, *params)) >= 0) & ((RH_sol1(Temps, k, *params)) <= 1)], RH_sol1(Temps, k, *params)[((RH_sol1(Temps, k, *params)) >= 0) & ((RH_sol1(Temps, k, *params)) <= 1)]
 
     def fit_evaporation_surface(T_range, RH_range, k_surface):
-        '''
+        """
         using curve fit to fit to the values of evaporation rate from sadkat over temp and rh
 
         code taken from:
         https://gist.github.com/silgon/24b56f8ae857ff4ab397
         https://scipython.com/blog/non-linear-least-squares-fitting-of-a-two-dimensional-data/
-        '''
+        """
 
 
         def _poly_func(x, a, b, c, d, e, f):
-            '''
+            """
             A 2nd order binary polynomial surface function for fitting
 
-            ''' 
+            """
             return a + b*x[0] + c*x[1] + d*x[0]*x[1]+ e*x[0]**2 + f*x[1]**2
 
         # using curve fit to get polynomial surface fit
@@ -673,7 +670,7 @@ if __name__ == '__main__':
 
 
         return X, Y, Z_fit, popt, np.sqrt(np.diag(pcov))
-    
+
     def myround(x, base=5):
         return base * round(float(x)/base)
 
@@ -687,7 +684,7 @@ if __name__ == '__main__':
                        k_ref_value = None,
                        experiment_T = None, experiment_data = None, sadkat_experiment_data = None,
                        delta_T_data = None):
-    
+
         Rh_convert_to_percent = 100
 
         T_mesh, RH_mesh, k_fit_surface_data, k_surface_parameters, k_surface_parameters_errors = fit_evaporation_surface(T, Rh_convert_to_percent * RH, k_data)
@@ -744,7 +741,7 @@ if __name__ == '__main__':
                                 ls = '-', alpha = 1, lw = 2, label = str(round(float(temp))) + ' K', zorder = 1)
 
         if isinstance(experiment_T, np.ndarray):
-                if isinstance(experiment_data, dict):    
+                if isinstance(experiment_data, dict):
 
                     #plotting experimental data
 
@@ -811,7 +808,7 @@ if __name__ == '__main__':
         CS = ax.contour(T, RH * 100, k_data, linewidths = 2, linestyles = '-', levels = boundaries, colors = 'k')
         ax.clabel(CS, levels = boundaries, inline = True, inline_spacing = 50, fmt = '%1.0f')
         if isinstance(experiment_T, np.ndarray):
-                if isinstance(experiment_data, dict):    
+                if isinstance(experiment_data, dict):
 
                     #plotting experimental data
                     for i, key, in enumerate(experiment_data):
@@ -1126,7 +1123,7 @@ if __name__ == '__main__':
 
     def plot_trajectories_and_evaporation(exp_data, exp_RHs, exp_v_x0s, exp_v_y0s, exp_R0s, exp_t_finals, exp_gas_flows, sim_data, sim_data_w_eff):
 
-        #get colourmap and norm 
+        #get colourmap and norm
         bounds = np.power(10.0, np.arange(-4, 2))
         ncolors = len(bounds) -1
         cmap = mpl.cm.get_cmap('plasma_r', ncolors) # Colour map (there are many others)
@@ -1216,7 +1213,7 @@ if __name__ == '__main__':
 if __name__ == '__main__':
     def plot_trajectories_and_evaporation_single_graph(exp_data, exp_RHs, exp_v_x0s, exp_v_y0s, exp_R0s, exp_t_finals, exp_gas_flows, sim_data, sim_data_w_eff, colours):
 
-        #get colourmap and norm 
+        #get colourmap and norm
         bounds = np.power(10.0, np.arange(-4, 2))
         ncolors = len(bounds) -1
         cmap = mpl.cm.get_cmap('plasma_r', ncolors) # Colour map (there are many others)
@@ -1297,7 +1294,7 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     indices = [0,2,3,4,6]
-    
+
     plot_trajectories_and_evaporation_single_graph([NaCl_data[index] for index in indices],
                                                    [NaCl_data_RHs[index] for index in indices],
                                                    [NaCl_v_x0s[index] for index in indices],
@@ -1746,14 +1743,30 @@ if __name__ == '__main__':
     # Obtain a table giving a history of *all* droplet parameters.
     history_d_half = droplet.complete_trajectory(trajectory)
 
+    droplet, trajectory = simulate(NaCl_10pctRH_t,
+                                   aqueous_NaCl_d_water,
+                                   T,
+                                   RH,
+                                   NaCl_10pctRH_R_0[0],
+                                   T,
+                                   mfs,
+                                   initial_position = np.array([0.1/1e3, 0, 1/1e3]),
+                                   initial_velocity = np.array([NaCl_10pctRH_v_x0[0],
+                                                                0,
+                                                                NaCl_10pctRH_v_y0[0]]),
+                                   gravity = np.array([0, 0, 9.80665]),
+                                   gas_velocity = np.array([0,0,NaCl_10pctRH_gas_flow]),
+                                   terminate_on_equilibration=False)
+    # Obtain a table giving a history of *all* droplet parameters.
+    history_d_water = droplet.complete_trajectory(trajectory)
 
 # ## R_0, V_x & V_y sensitivity
 
 if __name__ == '__main__':
     def plot_fill_region(ax, x1, y1, x2, y2, colour, label):
-        '''
+        """
         Useful for plotting regions with different sizes of data
-        '''
+        """
         ax.fill(np.append(x1, x2[::-1]),
                 np.append(y1, y2[::-1]),
                 color = colour, alpha = 0.7, label = label)
@@ -2215,30 +2228,3 @@ if __name__ == '__main__':
     plot_parameter_comparison('T / K', np.linspace(273 + 15, 273 +25 ,11), cmap_name='plasma', *generate_parameter_comparison(T_min= 273 + 15, T_max= 273 + 25))
     plot_parameter_comparison('MFS', np.linspace(0, 0.25 ,11), cmap_name='plasma', *generate_parameter_comparison(mfs_min= 0, mfs_max= 0.25))
     plot_parameter_comparison('V$_x$ / ms$^{-1}$', np.linspace(0.9, 1 ,11), cmap_name='plasma', *generate_parameter_comparison(Vx_min= 0.9, Vx_max= 1))
-
-if __name__ == '__main__':
-
-
-if __name__ == '__main__':
-
-
-if __name__ == '__main__':
-
-
-if __name__ == '__main__':
-
-
-if __name__ == '__main__':
-
-
-if __name__ == '__main__':
-
-
-if __name__ == '__main__':
-
-
-if __name__ == '__main__':
-
-
-if __name__ == '__main__':
-

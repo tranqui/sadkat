@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # + ignore="True"
 from preamble import *
 # -
@@ -158,7 +159,6 @@ if __name__ == '__main__':
 # Sanity check the water properties by plotting them below:
 
 if __name__ == '__main__':
-
     def plot_solvent_properties(solvent, T = np.linspace(T_freezing, T_freezing + 99.9, 201)):
         fig, axes = plt.subplots(ncols = 2, nrows = 3, sharex = True, dpi = resolution, figsize = (figure_width, figure_height * 2))
         plt.subplots_adjust(hspace=0)

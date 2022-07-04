@@ -282,13 +282,14 @@ if __name__ == '__main__':
         print(coefficients(fit))
         return lambda mfs: fit_func(mfs, *fit)
 
-if __name__ == '__main__':
-    df_NaCl_EAIM = pd.read_csv('src/NaCl_all.csv')
-    df_NaCl_EAIM.columns = rename_columns(df_NaCl_EAIM)
+# +
+df_NaCl_EAIM = pd.read_csv('src/NaCl_all.csv')
+df_NaCl_EAIM.columns = rename_columns(df_NaCl_EAIM)
 
-    Mr_NaCl = 58.44277
-    df_NaCl_EAIM['mfs_NaCl'] = get_mfs_from_molality(df_NaCl_EAIM.m_Na, Mr_NaCl)
-    df_NaCl_EAIM['a_w'] = get_water_activity(df_NaCl_EAIM)
+Mr_NaCl = 58.44277
+df_NaCl_EAIM['mfs_NaCl'] = get_mfs_from_molality(df_NaCl_EAIM.m_Na, Mr_NaCl)
+df_NaCl_EAIM['a_w'] = get_water_activity(df_NaCl_EAIM)
+# -
 
 if __name__ == '__main__':
 
@@ -421,6 +422,7 @@ if __name__ == '__main__':
 
     aw = np.linspace(0, 1, 100)
 
+    ax2.plot(mfs,aqueous_NaCl.solvent_activity(mfs), lw = 2, color = '#FFC20A', zorder = 0, label = 'E-AIM Fit')
     ax2.scatter(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, s = 10, color = '#5D3A9B', label = 'E-AIM Data')
 
     ax2.plot(mfs,aqueous_NaCl_a_ideal.solvent_activity(mfs), ls = '--', lw = 2, color = 'r', zorder = 0, label = "Raoult's Law")
