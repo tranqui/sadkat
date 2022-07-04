@@ -41,7 +41,7 @@ for cell in notebook.cells:
         split_by_lines = split_by_lines[1:]
         remove_indent = lambda line: line[nspaces:] if len(line) > nspaces else line
         split_by_lines = [remove_indent(line) for line in split_by_lines]
-        cell.source = '\n'.join(split_by_lines)
+        cell.source = '\n'.join(split_by_lines).strip()
 
 # Save the notebook.
 
