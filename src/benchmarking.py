@@ -1,6 +1,6 @@
-# # 4.4. Benchmarking
+# # 5. Benchmarking
 
-# # 4.4.1. Kulmala and Su
+# ## 5.1. Kulmala and Su
 #
 # Calculating evaporation rate over RH
 
@@ -370,7 +370,7 @@ if __name__ == '__main__':
     ax1.legend(handles=legend_elements)
     plt.show()
 
-# # 4.4.2. Loading experimental data for benchmarking
+# ## 5.2. Loading experimental data for benchmarking
 
 if __name__ == '__main__':
     import os
@@ -458,11 +458,11 @@ if __name__ == '__main__':
                 droplet_data = np.loadtxt(experiment_ids[key]['exp_props'].droplet_path[0]).T
                 droplet_data[1] = droplet_data[1]/1e6
 
-                """plt.plot(droplet_data[0], droplet_data[1]**2)
-                plt.show()
-                plt.plot(droplet_data[0], np.gradient(droplet_data[1]**2, droplet_data[0]))
-                plt.axhline(np.gradient(droplet_data[1]**2, droplet_data[0]).mean(), c= 'k')
-                plt.show()"""
+                # plt.plot(droplet_data[0], droplet_data[1]**2)
+                # plt.show()
+                # plt.plot(droplet_data[0], np.gradient(droplet_data[1]**2, droplet_data[0]))
+                # plt.axhline(np.gradient(droplet_data[1]**2, droplet_data[0]).mean(), c= 'k')
+                # plt.show()
 
                 experiment_ids[key]['exp_props']['k'][i] = -np.gradient(droplet_data[1]**2, droplet_data[0]).mean()
 
@@ -485,7 +485,7 @@ if __name__ == '__main__':
 if __name__ == '__main__':
     experiments, experiment_T_range = load_experimental_data()
 
-# # 4.4.3 Iterating over a 2 dimensional parameter space
+# ## 5.3. Iterating over a 2 dimensional parameter space
 #
 # A sample range of T and RH
 
@@ -600,7 +600,7 @@ if __name__ == '__main__':
     sadkat_experimental_evaporation_rates = get_k_surface(sadkat_experiemtal_comparison_data, experiment_T_range, RH_range)
     sadkat_experimental_delta_T = get_delta_T_surface(sadkat_experiemtal_comparison_data, experiment_T_range, RH_range)
 
-# # 4.4.4. EDB Comparison
+# ## 5.4. EDB comparison
 #
 
 if __name__ == '__main__':
@@ -1059,7 +1059,7 @@ if __name__ == '__main__':
     EDB_comparison('21-12-07_1618', RH_err= 0.025, )
     EDB_comparison('21-12-15_1604', )
 
-# # 4.4.5. FDC comparison
+# ## 5.5. FDC comparison
 
 if __name__ == '__main__':
     def aerodyamic_diameter(his, gasflow = 0):
@@ -1306,7 +1306,7 @@ if __name__ == '__main__':
                                                    [NaCl_simulations_w_eff[index] for index in indices],
                                                    ['#FFB000',  '#FE6100', '#DC267F', '#785EF0', '#648FFF'])
 
-# ## Comparing Evaporation Rate
+# ### 5.?. Comparing evaporation rate
 
 if __name__ == '__main__':
     rolling_window = 7
@@ -1377,7 +1377,9 @@ if __name__ == '__main__':
     ax.set_ylabel(r'Evaporation Rate / µm$^2$s$^{-1}$')
     plt.show()
 
-# # 4.5.1. Sensitivity Analysis
+# ## 5.6. Sensitivity analysis
+
+# ### 5.6.1. ???
 
 if __name__ == '__main__':
     NaCl_10pctRH_data = NaCl_data[2]
@@ -1760,7 +1762,7 @@ if __name__ == '__main__':
     # Obtain a table giving a history of *all* droplet parameters.
     history_d_water = droplet.complete_trajectory(trajectory)
 
-# ## R_0, V_x & V_y sensitivity
+# ### 5.6.2. R_0, V_x & V_y sensitivity
 
 if __name__ == '__main__':
     def plot_fill_region(ax, x1, y1, x2, y2, colour, label):
@@ -1866,7 +1868,7 @@ if __name__ == '__main__':
 
     plt.show()
 
-# ## Gas Flow, RH & T sensitivity
+# ### 5.6.3. Gas flow, RH & T sensitivity
 
 if __name__ == '__main__':
     fig, (ax0, ax1) = plt.subplots(1,2, figsize = figure_size, dpi = resolution)
@@ -1959,7 +1961,7 @@ if __name__ == '__main__':
 
     plt.show()
 
-# ## Activity Parameterisation Sensitivity
+# ### 5.6.4. Activity parameterisation sensitivity
 
 if __name__ == '__main__':
     fig, (ax0, ax1) = plt.subplots(1,2, figsize = figure_size, dpi = resolution)
@@ -2012,7 +2014,7 @@ if __name__ == '__main__':
 
     plt.show()
 
-# ## Density Paramterisation Sensitivity
+# ### 5.6.5. Density parameterisation sensitivity
 
 if __name__ == '__main__':
     fig, (ax0, ax1) = plt.subplots(1,2, figsize = figure_size, dpi = resolution)
@@ -2072,7 +2074,7 @@ if __name__ == '__main__':
 
     plt.show()
 
-# # 4.5.2. Parameter Sensiivty
+# ## 5.7. Parameter sensitivity
 
 if __name__ == '__main__':
     def scale_range_for_colorbar(x):
