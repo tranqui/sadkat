@@ -14,14 +14,15 @@ def read_source(paths):
     source = []
     for path in paths:
         with open(path) as f:
-            source += f.readlines()
+            source += f.readlines() + ['\n']
+
     source = ''.join(source)
     return source
 
 class Notebook:
     """Generate a jupyter notebook for the end-user by merging python source files together."""
 
-    def __init__(self, input_paths, output):
+    def __init__(self, input_paths, output, include_ignored=True):
         """Generate the notebook.
 
         Args:
@@ -37,8 +38,9 @@ class Notebook:
         self.notebook = jupytext.reads(self.source, fmt='py')
 
         # Remove any cells we have been instructed to ignore in the source files.
-        self.notebook.cells = list(filter(lambda cell: 'ignore' not in cell.metadata or
-                                          cell.metadata['ignore'] == False, self.notebook.cells))
+        if not include_ignored:
+            self.notebook.cells = list(filter(lambda cell: 'ignore' not in cell.metadata or
+                                              cell.metadata['ignore'] == False, self.notebook.cells))
 
         self.markdown = []
 
@@ -69,18 +71,27 @@ class Notebook:
         jupytext.write(self.notebook, output)
 
         sys.stderr.write(' done.\n')
-        sys.stderr.write('    contents:%s\n' % '\n        '.join(['']+self.sections))
+
+        # Show table of contents for generated notebook (from section headers).
+
+        # Indent section headings based on level of section for prettier contents.
+        indented_sections = ['    ' * (len(line) - len(line.lstrip('#')) - 1) + line for line in self.sections]
+        sys.stderr.write('    contents:%s\n' % '\n        '.join([''] + indented_sections))
         sys.stderr.flush()
 
-Notebook(['src/preamble.py', 'src/solvents.py'], '01_solvents.ipynb')
-Notebook(['src/preamble.py', 'src/gas.py'],      '02_gas.ipynb')
-Notebook(['src/preamble.py', 'src/droplet.py'],  '03_droplet.ipynb')
-Notebook(['src/preamble.py', 'src/gui.py'],      '04_gui.ipynb')
+Notebook(['src/solvents.py'],     '01_solvents.ipynb')
+Notebook(['src/solutes.py'],      '02_solutes.ipynb')
+Notebook(['src/gas.py'],          '03_gas.ipynb')
+Notebook(['src/droplet.py'],      '04_droplet.ipynb')
+Notebook(['src/gui.py'],          '05_gui.ipynb')
+Notebook(['src/benchmarking.py'], '06_benchmarking.ipynb')
+Notebook(['src/equations.py'],    '07_equations.ipynb')
 
 Notebook(['src/preamble.py',
           'src/solvents.py',
+          'src/solutes.py',
           'src/gas.py',
           'src/droplet.py',
-          'src/gui.py'], '05_everything.ipynb')
-
-Notebook(['src/preamble.py', 'src/benchmarking.py'], '06_benchmarking.ipynb')
+          'src/gui.py',
+          'src/benchmarking.py',
+          'src/equations.py'], '08_everything.ipynb', include_ignored=False)
