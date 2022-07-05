@@ -1,4 +1,5 @@
-# # Appendix: Differential Equations
+# # A. Overview of model
+# ## A.1. System of equations
 
 # $\renewcommand\vec[1]{\mathbf{#1}}$
 # The equations of motion in Xie et al (2007) read:
@@ -53,7 +54,7 @@
 #
 # The equilibrium vapour pressure for the solvent at the phase boundary can be calculated using the Clausius-Clapeyron relation, leading to Buck's equation for $p_{va}(T_p)$.
 
-# #### Constant density assumption?
+# ## A.2. Constant density assumption?
 #
 # The first equation implicitly assumes that the density is constant.
 # To see this, we rewrite this equation as the following two subequations:
