@@ -10,6 +10,7 @@ from sadkat.solutes import *
 @dataclass
 class Environment:
     """Class to conveniently store all parameters needed to describe the surrounding gas together."""
+
     solvent: object
     molar_mass: float               # g/mol
     pressure: float                 # Pa
