@@ -240,16 +240,23 @@ if __name__ == '__main__':
     #Useful functions for extracting E-AIM data
 
     def rename_columns(df):
-        '''Takes a df with the headings from E-AIM and makes the columns nice for using in pandas.
+        """Takes a df with the headings from E-AIM and makes the columns nice for using in pandas.
+
         Gets rid of (aq), (g) and spaces.
-        Returns a list of columns'''
+
+        Returns:
+            A list of columns."""
         return df.columns.str.strip().str.replace(' ', '_').str.replace('\(aq\)', '').str.replace('\(g\)', '')
 
     def get_mfs_from_molality (molality_series, solute_molar_mass):
-        '''Takes molality data of a species - *THIS MUST MATCH THE MOLALITY OF THE SOLUTE*
+        """Takes molality data of a species - *THIS MUST MATCH THE MOLALITY OF THE SOLUTE*
             i.e. n_species = n_solute. e.g. for MgCl_2, must use molality_Mg.
-           Takes molar mass of solute in g/mol.
-           Returns mass fraction series.'''
+
+        Takes molar mass of solute in g/mol.
+
+        Returns:
+            Mass fraction series.
+        """
         return 1 / ( 1 + (1 / (molality_series * solute_molar_mass * 1e-3)))
 
     def get_water_activity(df):
@@ -271,8 +278,6 @@ if __name__ == '__main__':
             degree: degree of polynomial fit.
         Returns:
             The fit function.
-
-        Credit: Joshua Robinson
         """
 
         coefficients = lambda x: np.concatenate([[-1-np.sum(x)], x, [1]])

@@ -6,7 +6,7 @@ from gas import *
 #
 # NB: See the appendix at the bottom of this notebook for the complete set of equations used to describe the droplet.
 
-# # 3.1. Definition
+# ## 3.1. Definition
 
 @dataclass
 class UniformDroplet:
@@ -463,7 +463,7 @@ class UniformDroplet:
 
         return pd.DataFrame(variables)
 
-# # 3.2. Example: running a droplet simulation from raw python code
+# ## 3.2. Example: running a droplet simulation from raw python code
 # This is a minimal working example of how you might use the previously defined class to run a simulation. You can modify this example to e.g. create scripts to automatically run simulations over varying conditions.
 
 if __name__ == '__main__':

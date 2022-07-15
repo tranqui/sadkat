@@ -71,9 +71,8 @@ def Atmosphere(temperature,
     vapour_pressure_water = relative_humidity * Water.equilibrium_vapour_pressure(temperature)
     mole_fraction_water = vapour_pressure_water / pressure
     molar_mass = (1-mole_fraction_water) * molar_mass_dry_air + mole_fraction_water * Water.molar_mass
+
     return Environment(Water, molar_mass, pressure, temperature, relative_humidity, specific_heat_capacity_air, thermal_conductivity_air(temperature), dynamic_viscosity_air, velocity)
-
-
 # -
 
 # Sanity check parameterisations of Earth's atmosphere by plotting key quantities below:
@@ -102,8 +101,6 @@ if __name__ == '__main__':
     ax2.set_ylim([0, 100])
     ax2.set_xlabel('T (K)')
     ax2.set_ylabel('thermal conductivity of air (mW/m/K)')
-
-    plt.show()
 
     from matplotlib.collections import LineCollection
 
@@ -142,8 +139,6 @@ if __name__ == '__main__':
     #ax2.set_ylim([0, 100])
     ax2.set_xlabel('T / K')
     ax2.set_ylabel('Thermal Conductivity / mWm$^{-1}$K$^{-1}$')
-
-    plt.show()
 
     from matplotlib.collections import LineCollection
 
