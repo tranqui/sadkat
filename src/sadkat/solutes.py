@@ -361,7 +361,7 @@ if __name__ == '__main__':
     mfs = np.linspace(0, 1, 100)
     fig, (ax1, ax2) = plt.subplots(ncols=2)
 
-    label='NaCl in water'
+    label = 'NaCl in water'
     additive_solute = all_solutions_volume_additivity[label]
 
     pl1, = ax1.plot(mfs, aqueous_NaCl.density(mfs), zorder=0, label='Fit')
@@ -420,7 +420,7 @@ if __name__ == '__main__':
     mfs = np.linspace(0, 1, 100)
     fig, (ax1, ax2) = plt.subplots(ncols=2)
 
-    label='NaCl in water'
+    label = 'NaCl in water'
     additive_solute = all_solutions_volume_additivity[label]
 
     pl1, = ax1.plot(mfs, aqueous_NaCl.density(mfs), zorder=0, label='E-AIM Fit')

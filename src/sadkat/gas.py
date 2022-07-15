@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     first = True
     for RH in np.linspace(0, 1, 6):
-        label=('%.1f' % RH)
+        label = ('%.1f' % RH)
         if first:
             label = 'RH=%s' % label
             first = False
@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
     #first = True
     for RH, color in zip(np.linspace(0, 1, 101), colors):
-        #label=('%.1f' % RH)
+        #label = ('%.1f' % RH)
         #if first:
             #label = 'RH=%s' % label
             #first = False
@@ -126,7 +126,7 @@ if __name__ == '__main__':
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
         lc = LineCollection(segments, linewidths=lwidths,color=color)
         ax1.add_collection(lc)
-        ax1.plot(T_C + T_freezing, rho, color = color, lw = 0 , label=label)
+        ax1.plot(T_C + T_freezing, rho, color=color, lw=0, label=label)
 
     #ax1.legend(loc='best')
     ax1.set_xlabel('T / K')
@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
     #first = True
     for RH, color in zip(np.linspace(0, 1, 101), colors):
-        #label=('%.1f' % RH)
+        #label = ('%.1f' % RH)
         #if first:
             #label = 'RH=%s' % label
             #first = False
@@ -164,7 +164,7 @@ if __name__ == '__main__':
         segments = np.concatenate([points[:-1], points[1:]], axis=1)
         lc = LineCollection(segments, linewidths=lwidths,color=color)
         ax1.add_collection(lc)
-        ax1.plot(T_C + T_freezing, rho, color = color, lw = 0 , label=label)
+        ax1.plot(T_C + T_freezing, rho, color=color, lw=0, label=label)
 
     #ax1.legend(loc='best')
     ax1.set_xlabel('T$_{gas}$ / K')
