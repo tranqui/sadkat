@@ -79,19 +79,21 @@ class Notebook:
         sys.stderr.write('    contents:%s\n' % '\n        '.join([''] + indented_sections))
         sys.stderr.flush()
 
-Notebook(['src/solvents.py'],     '01_solvents.ipynb')
-Notebook(['src/solutes.py'],      '02_solutes.ipynb')
-Notebook(['src/gas.py'],          '03_gas.ipynb')
-Notebook(['src/droplet.py'],      '04_droplet.ipynb')
-Notebook(['src/gui.py'],          '05_gui.ipynb')
-Notebook(['src/benchmarking.py'], '06_benchmarking.ipynb')
-Notebook(['src/equations.py'],    '07_equations.ipynb')
+source_dir = 'src/sadkat'
 
-Notebook(['src/preamble.py',
-          'src/solvents.py',
-          'src/solutes.py',
-          'src/gas.py',
-          'src/droplet.py',
-          'src/gui.py',
-          'src/benchmarking.py',
-          'src/equations.py'], '08_everything.ipynb', include_ignored=False)
+Notebook(['%s/solvents.py' % source_dir],     '01_solvents.ipynb')
+Notebook(['%s/solutes.py' % source_dir],      '02_solutes.ipynb')
+Notebook(['%s/gas.py' % source_dir],          '03_gas.ipynb')
+Notebook(['%s/droplet.py' % source_dir],      '04_droplet.ipynb')
+Notebook(['%s/gui.py' % source_dir],          '05_gui.ipynb')
+Notebook(['%s/benchmarking.py' % source_dir], '06_benchmarking.ipynb')
+Notebook(['%s/equations.py' % source_dir],    '07_equations.ipynb')
+
+Notebook(['%s/common.py' % source_dir,
+          '%s/solvents.py' % source_dir,
+          '%s/solutes.py' % source_dir,
+          '%s/gas.py' % source_dir,
+          '%s/droplet.py' % source_dir,
+          '%s/gui.py' % source_dir,
+          '%s/benchmarking.py' % source_dir,
+          '%s/equations.py' % source_dir], '08_everything.ipynb', include_ignored=False)
