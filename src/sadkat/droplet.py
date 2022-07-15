@@ -1,5 +1,5 @@
 # + ignore="True"
-from gas import *
+from sadkat.gas import *
 # -
 
 # # 3. Defining the droplet and its evolution

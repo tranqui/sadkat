@@ -1,5 +1,5 @@
 # + ignore="True"
-from solvents import *
+from sadkat.solvents import *
 # -
 
 # ## 2.2. Solutes
@@ -237,7 +237,7 @@ class VolumeAdditivityFit:
 
 if __name__ == '__main__':
 
-    #Useful functions for extracting E-AIM data
+    # Useful functions for extracting E-AIM data
 
     def rename_columns(df):
         """Takes a df with the headings from E-AIM and makes the columns nice for using in pandas.
@@ -283,17 +283,7 @@ if __name__ == '__main__':
         coefficients = lambda x: np.concatenate([[-1-np.sum(x)], x, [1]])
         fit_func = lambda mfs,*x: np.polyval(coefficients(x), mfs)
         fit = curve_fit(fit_func, mfs, activity, p0=np.zeros(degree-1))[0]
-        print(coefficients(fit))
         return lambda mfs: fit_func(mfs, *fit)
-
-# +
-df_NaCl_EAIM = pd.read_csv('src/NaCl_all.csv')
-df_NaCl_EAIM.columns = rename_columns(df_NaCl_EAIM)
-
-Mr_NaCl = 58.44277
-df_NaCl_EAIM['mfs_NaCl'] = get_mfs_from_molality(df_NaCl_EAIM.m_Na, Mr_NaCl)
-df_NaCl_EAIM['a_w'] = get_water_activity(df_NaCl_EAIM)
-# -
 
 if __name__ == '__main__':
 
@@ -366,6 +356,13 @@ if __name__ == '__main__':
 
     aw = np.linspace(0, 1, 100)
 
+    df_NaCl_EAIM = pd.read_csv('src/NaCl_all.csv')
+    df_NaCl_EAIM.columns = rename_columns(df_NaCl_EAIM)
+
+    Mr_NaCl = 58.44277
+    df_NaCl_EAIM['mfs_NaCl'] = get_mfs_from_molality(df_NaCl_EAIM.m_Na, Mr_NaCl)
+    df_NaCl_EAIM['a_w'] = get_water_activity(df_NaCl_EAIM)
+
     ax2.plot(mfs,aqueous_NaCl.solvent_activity(mfs), c=pl1.get_color(), zorder=0, label='Fit')
     ax2.plot(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, '.', c=pl2.get_color(), label='E-AIM')
 
@@ -373,7 +370,7 @@ if __name__ == '__main__':
     ax2.set_ylabel('solvent activity')
     ax2.legend()
 
-#  Parameterisations of some common solutes dissolved in water:
+# Parameterisations of some common solutes dissolved in water:
 
 # Sanity check the parameterisations of the solutions by plotting some of their properties below:
 

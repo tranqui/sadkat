@@ -1,5 +1,5 @@
 # + ignore="True"
-from droplet import *
+from sadkat.droplet import *
 # -
 
 # # 4. Running the simulation

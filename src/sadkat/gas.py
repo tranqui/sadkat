@@ -1,5 +1,5 @@
 # + ignore="True"
-from solutes import *
+from sadkat.solutes import *
 # -
 
 # ## 2.3. Environmental conditions

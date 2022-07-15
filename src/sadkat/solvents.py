@@ -1,5 +1,5 @@
 # + ignore="True"
-from preamble import *
+from sadkat.common import *
 # -
 
 # # 2. Physical parameters entering model
