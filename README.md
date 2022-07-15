@@ -48,6 +48,12 @@ TBD.
 
 Inside the source directory run:
 
+    pip install --user .
+
+to install for the user profile. To install system-wide run without the ``user`` flag (but you will probably need administrator priviliges e.g. via ``sudo``).
+
+To build the example notebooks run:
+
     python make.py
 
 This should generate a notebook `sadkat.ipynb` which can be opened from your browser after launching the jupyter notebook kernel. That is, run:
