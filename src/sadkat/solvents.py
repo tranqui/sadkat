@@ -102,7 +102,8 @@ if __name__ == '__main__':
 # ### 2.1.3. Properties of pure water
 
 # +
-molar_mass_water = 18.01528 # g/mol
+from chemicals import periodic_table
+molar_mass_water = 2*periodic_table.H.MW + periodic_table.O.MW # g/mol
 
 def density_water(temperature):
     """Fit for the density of pure water used in J Walker model.
@@ -362,7 +363,7 @@ if __name__ == '__main__':
 # #### 2.1.4.3. Properties of pure ethannol
 
 # +
-molar_mass_ethanol = 46.07 # g/mol
+molar_mass_ethanol =  2*periodic_table.C.MW + 6*periodic_table.H.MW + periodic_table.O.MW # g/mol
 
 def density_ethanol(T):
     """Density of ethanol as function of temperature.
@@ -499,7 +500,7 @@ if __name__ == '__main__':
 # #### 2.1.4.4. Properties of pure propanol
 
 # +
-molar_mass_propanol = 60.0952 # g/mol
+molar_mass_propanol = 3*periodic_table.C.MW + 8*periodic_table.H.MW + periodic_table.O.MW # g/mol
 
 def density_propanol(T):
     """Density of propanol as function of temperature.
@@ -635,7 +636,7 @@ if __name__ == '__main__':
 # #### 2.1.4.5. Properties of pure butanol
 
 # +
-molar_mass_butanol = 74.12 # g/mol
+molar_mass_butanol = 4*periodic_table.C.MW + 10*periodic_table.H.MW + periodic_table.O.MW # g/mol
 
 def density_butanol(T):
     """Density of butanol as function of temperature.
