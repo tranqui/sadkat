@@ -37,6 +37,10 @@ setup(
     install_requires=requirements,
     package_dir={'': 'src'},
     packages=find_packages('src'),
+    package_data={'sadkat': ['EDB data for benchmarking/*.csv',
+                             'EDB data for benchmarking/*/*.txt',
+                             'FDB data for benchmarking/*.npy']},
+    include_package_data=True,
 
     classifiers=[
         "Programming Language :: Python :: 3",
