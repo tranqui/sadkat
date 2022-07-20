@@ -232,72 +232,11 @@ class VolumeAdditivityFit:
         return 1 / (mfs / self.pure_solute_density + (1-mfs) / self.pure_solvent_density)
 # -
 
-# Extracting E-AIM data
-
-if __name__ == '__main__':
-
-    # Useful functions for extracting E-AIM data
-
-    def rename_eaim_columns(df):
-        """Takes a df with the headings from E-AIM and makes the columns nice for using in pandas.
-
-        Gets rid of (aq), (g) and spaces.
-
-        Args:
-            df: the table (assumed pandas dataframe).
-        Returns:
-            A list of columns.
-        """
-        return df.columns.str.strip().str.replace(' ', '_').str.replace('\(aq\)', '').str.replace('\(g\)', '')
-
-    def mfs_from_molality (molality_series, solute_molar_mass):
-        """Takes molality data of a species - *THIS MUST MATCH THE MOLALITY OF THE SOLUTE*
-            i.e. n_species = n_solute. e.g. for MgCl_2, must use molality_Mg.
-
-        Takes molar mass of solute in g/mol.
-
-        Args:
-            molality_series: ?
-            solute_molar_mass: units?
-        Returns:
-            Mass fraction series.
-        """
-        return 1 / ( 1 + (1 / (molality_series * solute_molar_mass * 1e-3)))
-
-    def eaim_water_activity(df):
-        """Water activity from reference data (from E-AIM).
-
-        Args:
-            df: the table of E-AIM data (assumed pandas dataframe).
-        """
-        return df.f_H2O * df.x_H2O
-
-    def fit_eaim_activity(mfs, activity, degree):
-        """Perform a fit of solvent activity (a) vs mass fraction of solute (mfs) on some reference data.
-
-        We constrain the fit so that a(mfs=0) = 1 and a(mfs=1) = 0, the physically correct limits.
-        The resulting polynomial fit then has the form:
-
-            a = c_0 + c_1 * mfs + c_2 * mfs**2 + ... + c_(n-1) * mfs**(n-1) + c_n * mfs**n
-
-        where c_0 = 1 and c_n = -\sum_{i=0}^{n-1} c_i in order to have the correct limits.
-
-        Args:
-            mfs: reference mass fraction of solute.
-            activity: reference solvent activity.
-            degree: degree of polynomial fit.
-        Returns:
-            The fit function.
-        """
-
-        coefficients = lambda x: np.concatenate([[-1-np.sum(x)], x, [1]])
-        fit_func = lambda mfs,*x: np.polyval(coefficients(x), mfs)
-        fit = curve_fit(fit_func, mfs, activity, p0=np.zeros(degree-1))[0]
-        return lambda mfs: fit_func(mfs, *fit)
-
 # Parameterisations for some common solutions:
 
 # +
+from chemicals import periodic_table
+NaCl_molar_mass = periodic_table.Na.MW + periodic_table.Cl.MW
 aqueous_NaCl = Solution(Water, 58.44, 2, 0.3, 2170,
                         DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]))
 
@@ -358,6 +297,8 @@ for label, solution in all_solutions.items():
 
 if __name__ == '__main__':
 
+    from sadkat.eaim import aqueous_NaCl_data as NaCl_data
+
     mfs = np.linspace(0, 1, 100)
     fig, (ax1, ax2) = plt.subplots(ncols=2)
 
@@ -365,7 +306,7 @@ if __name__ == '__main__':
     additive_solute = all_solutions_volume_additivity[label]
 
     pl1, = ax1.plot(mfs, aqueous_NaCl.density(mfs), zorder=0, label='Fit')
-    pl2, = ax1.plot(df_NaCl_EAIM.mfs_NaCl, 1000 * df_NaCl_EAIM.Density, '.', label='E-AIM')
+    pl2, = ax1.plot(NaCl_data.mass_fraction_solute, 1000 * NaCl_data.Density, '.', label='E-AIM')
 
     ax1.set_xlabel('MFS')
     ax1.set_ylabel('density (kg/m$^3$)')
@@ -373,15 +314,8 @@ if __name__ == '__main__':
 
     aw = np.linspace(0, 1, 100)
 
-    df_NaCl_EAIM = pd.read_csv('src/NaCl_all.csv')
-    df_NaCl_EAIM.columns = rename_eaim_columns(df_NaCl_EAIM)
-
-    Mr_NaCl = 58.44277
-    df_NaCl_EAIM['mfs_NaCl'] = mfs_from_molality(df_NaCl_EAIM.m_Na, Mr_NaCl)
-    df_NaCl_EAIM['a_w'] = eaim_water_activity(df_NaCl_EAIM)
-
     ax2.plot(mfs, aqueous_NaCl.solvent_activity(mfs), c=pl1.get_color(), zorder=0, label='Fit')
-    ax2.plot(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, '.', c=pl2.get_color(), label='E-AIM')
+    ax2.plot(NaCl_data.mass_fraction_solute, NaCl_data.solvent_activity, '.', c=pl2.get_color(), label='E-AIM')
 
     ax2.set_xlabel('MFS')
     ax2.set_ylabel('solvent activity')
@@ -424,7 +358,7 @@ if __name__ == '__main__':
     additive_solute = all_solutions_volume_additivity[label]
 
     pl1, = ax1.plot(mfs, aqueous_NaCl.density(mfs), zorder=0, label='E-AIM Fit')
-    pl2, = ax1.plot(df_NaCl_EAIM.mfs_NaCl, 1000 * df_NaCl_EAIM.Density, '.', label='E-AIM Data')
+    pl2, = ax1.plot(NaCl_data.mass_fraction_solute, 1000 * NaCl_data.Density, '.', label='E-AIM Data')
 
     pl3, = ax1.plot(mfs, aqueous_NaCl_d_linear.density(mfs), ls='--', zorder=0, label='Linear in $\sqrt{MFS}$')
     pl4, = ax1.plot(mfs, aqueous_NaCl_d_half.density(mfs), ls='-.', zorder=0, label=r'$\frac{1}{2}$ $\times$ E-AIM Fit')
@@ -436,7 +370,7 @@ if __name__ == '__main__':
     aw = np.linspace(0, 1, 100)
 
     ax2.plot(mfs, aqueous_NaCl.solvent_activity(mfs), c=pl1.get_color(), zorder=0, label='E-AIM Fit')
-    ax2.plot(df_NaCl_EAIM.mfs_NaCl, df_NaCl_EAIM.a_w, '.', c=pl2.get_color(), label='E-AIM Data')
+    ax2.plot(NaCl_data.mass_fraction_solute, NaCl_data.solvent_activity, '.', c=pl2.get_color(), label='E-AIM Data')
 
     ax2.plot(mfs, aqueous_NaCl_a_ideal.solvent_activity(mfs), ls='--', c='r', zorder=0, label="Raoult's Law")
 

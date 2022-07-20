@@ -80,7 +80,7 @@ def Atmosphere(temperature,
 
 if __name__ == '__main__':
     T_C = np.linspace(0, 100, 101)
-    fig, (ax1, ax2) = plt.subplots(ncols=2, dpi = resolution)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
     first = True
     for RH in np.linspace(0, 1, 6):
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     from matplotlib.collections import LineCollection
 
     T_C = np.linspace(0, 100, 101)
-    fig, (ax1, ax2) = plt.subplots(ncols=2, figsize = figure_size, dpi = resolution)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
     cmap = mpl.cm.plasma_r
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     from matplotlib.collections import LineCollection
 
     T_C = np.linspace(0, 100, 101)
-    fig, (ax1, ax2) = plt.subplots(ncols=2, figsize = figure_size, dpi = resolution)
+    fig, (ax1, ax2) = plt.subplots(ncols=2)
 
     cmap = mpl.cm.plasma_r
 
