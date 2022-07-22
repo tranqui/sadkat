@@ -30,13 +30,20 @@ class Environment:
     def vapour_pressure(self):
         """Vapour pressure in Pascals."""
         return self.relative_humidity * self.solvent.equilibrium_vapour_pressure(self.temperature)
+
+    @property
+    def mean_free_path(self):
+        """Calculate mean free path via hard sphere approximation."""
+        return self.dynamic_viscosity / self.density * np.sqrt(np.pi * 1e-3*self.molar_mass / (2*gas_constant * self.temperature))
 # -
 
 # Specific parameterisations for the Earth's atmosphere (the main environment people will likely be considering):
 
 # +
-molar_density_air = lambda T: chemicals.air.lemmon2000_rho(T, standard_atmospheric_pressure)
-thermal_conductivity_air = lambda T: chemicals.thermal_conductivity.k_air_lemmon(T, molar_density_air(T)) #  J/s/m/K
+molar_mass_air = chemicals.air.lemmon2000_air_MW # g/mol
+molar_density_air = lambda T: chemicals.air.lemmon2000_rho(T, standard_atmospheric_pressure) # mol / m^3
+density_air = lambda T: 1e-3*molar_mass_air * molar_density_air(T) # kg/m^3
+thermal_conductivity_air = np.vectorize(lambda T: chemicals.thermal_conductivity.k_air_lemmon(T, molar_density_air(T))) #  J/s/m/K
 
 specific_heat_capacity_air = lambda T: 1.006e3 # J/kg/K
 dynamic_viscosity_air = lambda T: chemicals.viscosity.mu_air_lemmon(T, molar_density_air(T)) # kg/m/s

@@ -281,6 +281,16 @@ class UniformDroplet:
         return 1 + 0.3 * Re**(1/2) * Pr**(1/3)
 
     @property
+    def knudsen_number(self):
+        return self.environment.mean_free_path / self.radius
+
+    @property
+    def fuchs_sutugin_correction(self):
+        Kn = self.knudsen_number
+        alpha = 1 # parameter in Fuchs-Sutugin theory that we can take to be one (for now).
+        return (1 + Kn) / (1 + (4/3*(1 + Kn)/alpha + 0.377)*Kn)
+
+    @property
     def dmdt(self):
         """Time derivative of mass, i.e. the rate of evaporation in kg/s."""
         Sh = self.sherwood_number
@@ -301,7 +311,9 @@ class UniformDroplet:
         I = np.log((self.environment.pressure - self.vapour_pressure) /
                    (self.environment.pressure - self.environment.vapour_pressure))
 
-        return 4*np.pi*self.radius * self.environment.density * (self.solution.solvent.molar_mass / self.environment.molar_mass) * D_eff * Sh * I
+        beta = self.fuchs_sutugin_correction
+
+        return 4*np.pi*self.radius * self.environment.density * (self.solution.solvent.molar_mass / self.environment.molar_mass) * D_eff * Sh * beta * I
 
     @property
     def dTdt(self):
