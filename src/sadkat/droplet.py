@@ -155,14 +155,13 @@ class UniformDroplet:
     @property
     def vapour_pressure(self):
         """Vapour pressure at gas-liquid boundary in Pascals."""
-        return self.solution.solvent_activity(self.mass_fraction_solute) * self.solution.solvent.equilibrium_vapour_pressure(self.temperature)
-        # Kelvin effect implementation
-        #return kelvin_effect(self.solution.solvent.surface_tension(self.temperature),
-        #                     self.solution.solvent.density(self.temperature),
-        #                     self.solution.solvent.molar_mass,
-        #                     self.temperature,
-        #                     self.solution.solvent_activity(self.mass_fraction_solute) * self.solution.solvent.equilibrium_vapour_pressure(self.temperature),
-        #                     self.radius)
+        P = self.solution.solvent_activity(self.mass_fraction_solute) * self.solution.solvent.equilibrium_vapour_pressure(self.temperature)
+        P *= kelvin_effect(self.solution.solvent.surface_tension(self.temperature),
+                           self.solution.solvent.density(self.temperature),
+                           self.solution.solvent.molar_mass,
+                           self.temperature,
+                           self.radius)
+        return P
 
     @property
     def surface_solvent_activity(self):
