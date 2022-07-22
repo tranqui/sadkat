@@ -66,7 +66,7 @@ def surface_tension(A, B, C, D, E, T_crit, T):
 
     return sigma
 
-def kelvin_effect(solvent_surface_tension, solvent_density, solvent_molar_mass, T, P_vap_flat, droplet_radius):
+def kelvin_effect(solvent_surface_tension, solvent_density, solvent_molar_mass, T, droplet_radius):
     """Drop in vapour pressure due to surface curvature.
 
     Read more: https://www.e-education.psu.edu/meteo300/node/676
@@ -79,25 +79,35 @@ def kelvin_effect(solvent_surface_tension, solvent_density, solvent_molar_mass, 
         P_vap_flat: vapour pressure of a flat interface under equivalent conditions (Pa).
         droplet_radius: radius of droplet (m).
     Returns:
-        Vapour pressure of the curved interface (Pa).
+        Multiplier to vapour pressure in the curved interface (unitless).
+        Final vapour pressure is obtained by multiplying this by the flat result.
     """
 
-    n_L = solvent_density / solvent_molar_mass
-    return P_vap_flat * np.exp( (2 * solvent_surface_tension) / (n_L * gas_constant * T * droplet_radius))
+    molarity = 1e3*solvent_density / solvent_molar_mass # mol / m^3
+    return np.exp( (2 * solvent_surface_tension) / (molarity * gas_constant * T * droplet_radius))
 # -
 
 # Plot kelvin effect with approx value of surface tension and p_vap_flat and compare to reference: https://www.e-education.psu.edu/meteo300/node/676
 # This shows that it is only really significant for very small droplets, but I think its valuable and relatively easy to include.
 
 if __name__ == '__main__':
-    R_range = np.arange(1e-9, 30e-9, 1e-10)
+    R_range = np.linspace(0, 30, 1000)[1:]
 
-    curve_range = kelvin_effect(0.073, 997, 0.018, 293, 2300, R_range)
+    P_flat = 2300
+    T_C = 20
+    T_K = T_C + T_freezing
+    sigma = surface_tension_water(T_K)
+    density = density_water(T_K)
+    molar_mass = molar_mass_water
+
+    multiplier = kelvin_effect(sigma, density, molar_mass, T_K, 1e-9*R_range)
 
     plt.figure()
-    plt.plot(R_range/1e-9, curve_range/2300)
-    plt.xlabel('radius / nm')
-    plt.ylabel('P_vap / P_vap_flat')
+    plt.plot(R_range, multiplier)
+    plt.xlim([0, R_range[-1]])
+    plt.ylim([1, 3])
+    plt.xlabel('radius $R$ / nm')
+    plt.ylabel(r'$P_R / P_\mathrm{flat}$')
 
 # ### 2.1.3. Properties of pure water
 
