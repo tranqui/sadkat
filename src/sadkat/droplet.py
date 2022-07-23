@@ -223,7 +223,6 @@ class UniformDroplet:
         elif Re < 1e-12: return np.inf
         else: return (24 / Re) * (1 + Re**(2/3) / 6)
 
-
     @property
     def aperture_diameter(self):
         """"meters"""
@@ -336,6 +335,19 @@ class UniformDroplet:
         return 3*K * (T_inf - T) * Nu / (c*rho*r**2) + L*self.dmdt / (c*m) - 3*Gamma * (T**4 - T_inf**4) / (c*rho*r)
 
     @property
+    def cunningham_slip_correction(self):
+        """Correction to Stokes' law for drag for small particles due to the onset
+        of slip on the particle surface."""
+
+        # Phenomenological parameters in the theory due to Davies (1945):
+        A1 = 1.257
+        A2 = 0.400
+        A3 = 1.100
+
+        Kn = self.knudsen_number
+        return 1 + Kn * (A1 + A2*np.exp(-A3/Kn))
+
+    @property
     def dvdt(self):
         """Time derivative of velocity, i.e. its acceleration from Newton's second law in m/s^2."""
         rho_p = self.density
@@ -345,7 +357,7 @@ class UniformDroplet:
         buoyancy = 1 - rho_g/rho_p
         acceleration = buoyancy*g
 
-        C = self.drag_coefficient
+        C = self.drag_coefficient * self.cunningham_slip_correction
         if np.isfinite(C):
             acceleration -= 3*C*rho_g * self.relative_speed * self.relative_velocity / (8*rho_p*self.radius)
 
