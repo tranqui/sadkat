@@ -283,7 +283,6 @@ all_solutions = {'NaCl in water': aqueous_NaCl,
 
 # Identical versions of the above solutions but with a simpler density parameterisation (volume additivity):
 
-# +
 from copy import copy
 all_solutions_volume_additivity = {}
 for label, solution in all_solutions.items():
@@ -291,13 +290,12 @@ for label, solution in all_solutions.items():
     rho1, rho2 = solution.density(0), solution.solid_density
     additive_solution.density = VolumeAdditivityFit(rho1, rho2)
     all_solutions_volume_additivity[label] = additive_solution
-# -
 
 # Test parameterisations of aqueous NaCl solution against verified data:
 
 if __name__ == '__main__':
 
-    from sadkat.eaim import aqueous_NaCl_data as NaCl_data
+    from src.sadkat.eaim import aqueous_NaCl_data as NaCl_data
 
     mfs = np.linspace(0, 1, 100)
     fig, (ax1, ax2) = plt.subplots(ncols=2)
@@ -336,7 +334,7 @@ if __name__ == '__main__':
 
     ax1.set_xlabel('MFS')
     ax1.set_ylabel('density (kg/m$^3$)')
-    ax1.legend(loc='best')
+    ax1.legend(loc='upper center', bbox_to_anchor = (0.5,-0.2))
 
     aw = np.linspace(0, 1, 100)
     for label, solute in all_solutions.items():
@@ -345,7 +343,7 @@ if __name__ == '__main__':
 
     ax2.set_xlabel('MFS')
     ax2.set_ylabel('solvent activity')
-    ax2.legend(loc='best')
+    ax2.legend(loc='upper center', bbox_to_anchor = (0.5,-0.2))
 
 # Test various ways to parameterise aqueous NaCl data:
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # + ignore="True"
 from sadkat.common import *
 # -
@@ -87,28 +88,6 @@ def kelvin_effect(solvent_surface_tension, solvent_density, solvent_molar_mass, 
     return np.exp( (2 * solvent_surface_tension) / (molarity * gas_constant * T * droplet_radius))
 # -
 
-# Plot kelvin effect with approx value of surface tension and p_vap_flat and compare to reference: https://www.e-education.psu.edu/meteo300/node/676
-# This shows that it is only really significant for very small droplets, but I think its valuable and relatively easy to include.
-
-if __name__ == '__main__':
-    R_range = np.linspace(0, 30, 1000)[1:]
-
-    P_flat = 2300
-    T_C = 20
-    T_K = T_C + T_freezing
-    sigma = surface_tension_water(T_K)
-    density = density_water(T_K)
-    molar_mass = molar_mass_water
-
-    multiplier = kelvin_effect(sigma, density, molar_mass, T_K, 1e-9*R_range)
-
-    plt.figure()
-    plt.plot(R_range, multiplier)
-    plt.xlim([0, R_range[-1]])
-    plt.ylim([1, 3])
-    plt.xlabel('radius $R$ / nm')
-    plt.ylabel(r'$P_R / P_\mathrm{flat}$')
-
 # ### 2.1.3. Properties of pure water
 
 # +
@@ -181,6 +160,28 @@ Water = Solvent(molar_mass_water,
                 VapourBinaryDiffusionCoefficient(0.2190e-4, T_freezing, 1.81),
                 surface_tension_water)
 # -
+
+# Plot kelvin effect with approx value of surface tension and p_vap_flat and compare to reference: https://www.e-education.psu.edu/meteo300/node/676
+# This shows that it is only really significant for very small droplets, but I think its valuable and relatively easy to include.
+
+if __name__ == '__main__':
+    R_range = np.linspace(0, 30, 1000)[1:]
+
+    P_flat = 2300
+    T_C = 20
+    T_K = T_C + T_freezing
+    sigma = surface_tension_water(T_K)
+    density = density_water(T_K)
+    molar_mass = molar_mass_water
+
+    multiplier = kelvin_effect(sigma, density, molar_mass, T_K, 1e-9*R_range)
+
+    plt.figure()
+    plt.plot(R_range, multiplier)
+    plt.xlim([0, R_range[-1]])
+    plt.ylim([1, 3])
+    plt.xlabel('radius $R$ / nm')
+    plt.ylabel(r'$P_R / P_\mathrm{flat}$')
 
 # Sanity check the water properties by plotting them below:
 

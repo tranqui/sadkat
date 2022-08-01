@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # # 5. Benchmarking
 
 # ## 5.1. Kulmala and Su
@@ -5,11 +6,11 @@
 # Calculating evaporation rate over RH
 
 if __name__ == '__main__':
-    Kulmala_data = np.load('src/kulmala_data.npy', allow_pickle = True)
-    Kulmala_RH_list = np.load('src/kulmala_rh_list.npy', allow_pickle = True)
+    Kulmala_data = np.load('src/sadkat/kulmala_data.npy', allow_pickle = True)
+    Kulmala_RH_list = np.load('src/sadkat/kulmala_rh_list.npy', allow_pickle = True)
 
-    Su_data = np.load('src/Su_data.npy', allow_pickle = True)
-    Su_RH_list = np.load('src/Su_rh_list.npy', allow_pickle = True)
+    Su_data = np.load('src/sadkat/Su_data.npy', allow_pickle = True)
+    Su_RH_list = np.load('src/sadkat/Su_rh_list.npy', allow_pickle = True)
 
 if __name__ == '__main__':
     solution = aqueous_NaCl
@@ -138,7 +139,11 @@ if __name__ == '__main__':
                                k_means, k_poly_model,
                                delta_T_means, delta_t_poly_model,
                                cmap = mpl.cm.viridis):
-
+        """
+        Function for plotting RH dependent evaporation porifles from various models.
+        Requires data in andas dataframes with colmuns 'time_s', 'radius_um'and 'temperature_K'.
+        Also take np.polyfit models for plotting.
+        """
         norm = mpl.colors.Normalize(vmin= RH_list.min(), vmax=RH_list.max())
         colours = cmap(RH_list)
 
@@ -245,7 +250,7 @@ if __name__ == '__main__':
 
     poly_line_width = 1.5
 
-    fig, ax = plt.subplots(dpi = resolution)
+    fig, ax = plt.subplots()
 
     for k, RH in zip(Kulmala_k_means, Kulmala_RH_list):
         ax.scatter(RH * saturation_to_percent_convert,
@@ -288,7 +293,7 @@ if __name__ == '__main__':
 
     plt.show()
 
-    fig, ax1 = plt.subplots(dpi = resolution)
+    fig, ax1 = plt.subplots()
 
     # comparing temperature suppresssion data
     for k, RH in zip(Kulmala_T_suppression, Kulmala_RH_list):
@@ -400,7 +405,7 @@ if __name__ == '__main__':
         experiments_list = []
 
 
-        for i in os.walk('src/EDB data for benchmarking'):
+        for i in os.walk('src/sadkat/EDB data for benchmarking'):
 
             experiment_folder = os.path.basename(os.path.normpath(i[0]))
             #clip out the id part of the folder
@@ -416,7 +421,7 @@ if __name__ == '__main__':
         experiment_ids = {exp_id: {} for exp_id in experiments_list}
 
         #go through again and get smaples and probes
-        for root, dirs, files in os.walk('src/EDB data for benchmarking'):
+        for root, dirs, files in os.walk('src/sadkat/EDB data for benchmarking'):
 
             experiment_folder = os.path.basename(os.path.normpath(root))
             #clip out the id part of the folder
@@ -706,7 +711,7 @@ if __name__ == '__main__':
         norm = mpl.colors.BoundaryNorm(boundaries=boundaries, ncolors=256)
 
         #3d plot of evaporation rate over temperature and rh
-        fig = plt.figure(figsize=(21,13), dpi = resolution)
+        fig = plt.figure(figsize=(21,13), )
         ax = fig.gca(projection='3d')
 
         #surface of data
@@ -799,7 +804,7 @@ if __name__ == '__main__':
 
         ### Contour plot
 
-        fig, ax = plt.subplots(figsize = figure_size, dpi = resolution)
+        fig, ax = plt.subplots()
         colour_ticks = 25
         cmap = mpl.cm.jet
         boundaries = np.arange(myround_down(k_data.T.min(), colour_ticks),myround_up(k_data.T.max() + colour_ticks, colour_ticks),colour_ticks)
@@ -838,7 +843,7 @@ if __name__ == '__main__':
             temp_norm = mpl.colors.BoundaryNorm(boundaries=temp_boundaries, ncolors=256)
 
             #3d plot of evaporation rate over temperature and rh
-            fig = plt.figure(figsize=(21,13), dpi = resolution)
+            fig = plt.figure(figsize=(21,13), )
             ax = fig.gca(projection='3d')
 
             #white contours to show levels
@@ -868,7 +873,7 @@ if __name__ == '__main__':
 
             residuals_max = myround_up(np.abs(residuals).max())
 
-            fig, ax = plt.subplots(figsize = figure_size, dpi = resolution)
+            fig, ax = plt.subplots()
 
             colour_ticks = 50
             cmap = mpl.cm.jet
@@ -892,7 +897,7 @@ if __name__ == '__main__':
             plt.show()
 
 
-    return
+        return
 
 if __name__ == '__main__':
     k_surface_plot(sadkat_T_range, sadkat_RH_range,
@@ -907,9 +912,9 @@ if __name__ == '__main__':
 if __name__ == '__main__':
     #sample data available from https://doi.org/10.5281/zenodo.6396580
 
-    #sample_2d_data = np.load('src/sample_2d_data.npy',allow_pickle = True)
-    #sample_RH_range = np.load('src/sample_RH_range.npy',allow_pickle = True)
-    #sample_T_range = np.load('src/sample_T_range.npy',allow_pickle = True)
+    #sample_2d_data = np.load('src/sadkat/sample_2d_data.npy',allow_pickle = True)
+    #sample_RH_range = np.load('src/sadkat/sample_RH_range.npy',allow_pickle = True)
+    #sample_T_range = np.load('src/sadkat/sample_T_range.npy',allow_pickle = True)
     #sample_2d_evaporation_rates = get_k_surface(sample_2d_data,sample_T_range, sample_RH_range)
     #sample_2d_delta_T = get_delta_T_surface(sample_2d_data,sample_T_range, sample_RH_range)
 
@@ -981,7 +986,7 @@ if __name__ == '__main__':
         result_negTerr = specific_droplet.complete_trajectory(specific_trajectory)
 
 
-        fig, ax1 = plt.subplots(dpi = resolution)
+        fig, ax1 = plt.subplots()
 
         #plotting RH error range
         ax1.fill(np.append(result_posRHerr.time + t0,
@@ -1069,9 +1074,9 @@ if __name__ == '__main__':
 if __name__ == '__main__':
 
     # load data
-    NaCl_data = np.load('src/FDC data for benchmarking/NaCl_FDC_data.npy', allow_pickle=True)
-    NaCl_data_parameters = np.load('src/FDC data for benchmarking/NaCl_FDC_data_parameters.npy', allow_pickle=True)
-    NaCl_data_RHs = np.load('src/FDC data for benchmarking/NaCl_FDC_data_RHs.npy', allow_pickle=True)
+    NaCl_data = np.load('src/sadkat/FDC data for benchmarking/NaCl_FDC_data.npy', allow_pickle=True)
+    NaCl_data_parameters = np.load('src/sadkat/FDC data for benchmarking/NaCl_FDC_data_parameters.npy', allow_pickle=True)
+    NaCl_data_RHs = np.load('src/sadkat/FDC data for benchmarking/NaCl_FDC_data_RHs.npy', allow_pickle=True)
     NaCl_data_RHs = NaCl_data_RHs/100
 
     initial_points = 5
@@ -1132,7 +1137,7 @@ if __name__ == '__main__':
         mapper = mpl.cm.ScalarMappable(norm=norm, cmap= cmap)
 
 
-        fig, axes = plt.subplots(len(exp_data), 2, sharex='col', sharey=False, figsize = (10,4 * len(exp_data)), dpi = resolution)
+        fig, axes = plt.subplots(len(exp_data), 2, sharex='col', sharey=False, figsize = (10,4 * len(exp_data)), )
         plt.subplots_adjust(hspace=0, wspace=0.25)
         for i, (axis_pair, result, simulation, simulation_eff, R0, RH) in enumerate(zip(axes, exp_data, sim_data, sim_data_w_eff, exp_R0s, exp_RHs)):
 
@@ -1222,7 +1227,7 @@ if __name__ == '__main__':
         mapper = mpl.cm.ScalarMappable(norm=norm, cmap= cmap)
 
 
-        fig, axis_pair = plt.subplots(1, 2, sharex='col', sharey=False, figsize = (13,8), dpi = resolution)
+        fig, axis_pair = plt.subplots(1, 2, sharex='col', sharey=False, figsize = (13,8), )
         plt.subplots_adjust(hspace=0, wspace=0.25)
         for i, (result, simulation, simulation_eff, R0, RH, colour) in enumerate(zip(exp_data, sim_data, sim_data_w_eff, exp_R0s, exp_RHs, colours)):
 
@@ -1312,12 +1317,12 @@ if __name__ == '__main__':
     rolling_window = 7
     colours = ['#E69F00',  '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7']
 
-    fig,ax = plt.subplots(dpi = resolution)
+    fig,ax = plt.subplots()
 
     for result, RH, simulation, R0, colour in zip(NaCl_data, NaCl_data_RHs, NaCl_simulations, NaCl_R0s, colours):
         data = simulation[simulation.time >= 0.1]
         line, = ax.plot(data.time,
-                        - np.gradient((data.radius / 1e-6) ** 2, data.time), ls = '--', lw = 3,
+                        - np.gradient((data.radius / 1e-6) ** 2, data.time), ls = '-', lw = 3,
                         label = str(round(100 * RH)) + ' % RH', color = colour)
 
         exp_data = result['all'].rolling(rolling_window, center = True,).mean()
@@ -1344,12 +1349,12 @@ if __name__ == '__main__':
     ax.set_ylabel(r'Evaporation Rate / µm$^2$s$^{-1}$')
     plt.show()
 
-    fig,ax = plt.subplots(dpi = resolution)
+    fig,ax = plt.subplots()
 
     for result, RH, simulation, R0, colour in zip(NaCl_data, NaCl_data_RHs, NaCl_simulations, NaCl_R0s, colours):
         data = simulation[simulation.time >= 0.1]
         line, = ax.plot(data.time / R0[0] ** 2 / 1e12,
-                        - np.gradient((data.radius / 1e-6) ** 2, data.time), ls = '--', lw = 3,
+                        - np.gradient((data.radius / 1e-6) ** 2, data.time), ls = '-', lw = 3,
                         label = str(round(100 * RH)) + ' % RH', color = colour)
 
         exp_data = result['all'].rolling(rolling_window, center = True,).mean()
@@ -1392,7 +1397,7 @@ if __name__ == '__main__':
 if __name__ == '__main__':
 
     def plot_NaCl_sensitivity(his, his_pos, his_neg, df, chart_label):
-        fig, (ax0, ax1) = plt.subplots(1,2, figsize = figure_size, dpi = 400)
+        fig, (ax0, ax1) = plt.subplots(1,2,)
         ax0.plot(his.x/1e-3, his.z/1e-3, 'red', lw = 2, label = 'Simulation')
         ax0.plot(his_pos.x/1e-3, his_pos.z/1e-3, '--', color = 'red', lw = 2, label = '+ve error')
         ax0.plot(his_neg.x/1e-3, his_neg.z/1e-3, ':', color = 'red', lw = 2, label = '-ve error')
@@ -1774,7 +1779,7 @@ if __name__ == '__main__':
                 color = colour, alpha = 0.7, label = label)
         return ax
 
-    fig, (ax0, ax1) = plt.subplots(1,2, figsize = figure_size, dpi = resolution)
+    fig, (ax0, ax1) = plt.subplots(1,2,)
 
     #Vx
     ax0 = plot_fill_region(ax0,
@@ -1871,7 +1876,7 @@ if __name__ == '__main__':
 # ### 5.6.3. Gas flow, RH & T sensitivity
 
 if __name__ == '__main__':
-    fig, (ax0, ax1) = plt.subplots(1,2, figsize = figure_size, dpi = resolution)
+    fig, (ax0, ax1) = plt.subplots(1,2, )
 
     # Gas Flow
     ax0 = plot_fill_region(ax0,
@@ -1964,7 +1969,7 @@ if __name__ == '__main__':
 # ### 5.6.4. Activity parameterisation sensitivity
 
 if __name__ == '__main__':
-    fig, (ax0, ax1) = plt.subplots(1,2, figsize = figure_size, dpi = resolution)
+    fig, (ax0, ax1) = plt.subplots(1,2, )
 
     ax0.plot(history.x/1e-3, history.z/1e-3, 'k', lw = 1, label = 'Simulation')
 
@@ -2017,7 +2022,7 @@ if __name__ == '__main__':
 # ### 5.6.5. Density parameterisation sensitivity
 
 if __name__ == '__main__':
-    fig, (ax0, ax1) = plt.subplots(1,2, figsize = figure_size, dpi = resolution)
+    fig, (ax0, ax1) = plt.subplots(1,2, )
 
     ax0.plot(history.x/1e-3, history.z/1e-3, 'k', lw = 1, label = 'Simulation')
 
@@ -2105,7 +2110,7 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     def plot_parameter_comparison(label, range_name, history_name, history_w_eff_name, cmap_name = 'plasma_r'):
-        fig, (ax0, ax1) = plt.subplots(1,2, figsize = figure_size, dpi = resolution)
+        fig, (ax0, ax1) = plt.subplots(1,2, )
 
         ax0.set_xscale('log')
         ax0.set_yscale('log')
@@ -2230,3 +2235,172 @@ if __name__ == '__main__':
     plot_parameter_comparison('T / K', np.linspace(273 + 15, 273 +25 ,11), cmap_name='plasma', *generate_parameter_comparison(T_min= 273 + 15, T_max= 273 + 25))
     plot_parameter_comparison('MFS', np.linspace(0, 0.25 ,11), cmap_name='plasma', *generate_parameter_comparison(mfs_min= 0, mfs_max= 0.25))
     plot_parameter_comparison('V$_x$ / ms$^{-1}$', np.linspace(0.9, 1 ,11), cmap_name='plasma', *generate_parameter_comparison(Vx_min= 0.9, Vx_max= 1))
+
+if __name__ == '__main__':
+    mfsrange = np.linspace(0,1, 1000)
+    trange = np.linspace(T_freezing, T_freezing + 50, 1000)
+
+    fig, (ax0, ax1) = plt.subplots(ncols=2, sharey = True)
+    plt.subplots_adjust( wspace=0.0)
+    #getting diffusion vs MFS data
+    #SOURCE: https://pubs.acs.org/doi/abs/10.1021/acs.jpcb.8b09584
+    diffusivity_vs_MFS = pd.read_csv("src/sadkat/diffusivity vs mfs plot-data.csv", delimiter=",", header = None,names = ["MFS", "D"])
+    diffusivity_vs_MFS= diffusivity_vs_MFS.append(pd.DataFrame([[1, 0]], columns = ["MFS", "D"]))
+    diffusivity_vs_MFS.D = diffusivity_vs_MFS.D * 1e-9
+
+    #experimental data
+    ax0.scatter(diffusivity_vs_MFS.MFS, diffusivity_vs_MFS.D/1e-12, s = 4, color = "k")
+
+    #interpolating data
+    from scipy import interpolate
+    DvsMFS = interpolate.PchipInterpolator(diffusivity_vs_MFS.MFS, diffusivity_vs_MFS.D,)
+    ax0.plot(mfsrange, DvsMFS(mfsrange)/1e-12, lw = 2, color = "r")
+
+    ax0.axhline(0, color = "k", lw = 0.5)
+
+    #getting diffusion vs Temperature data
+    #SOURCE: https://www.sciencedirect.com/science/article/pii/0011747173900739
+    diffusivity_vs_T = pd.read_csv("src/sadkat/diffusivity vs T plot-data.csv", delimiter=",", header = None,names = ["Temperature", "D"])
+    diffusivity_vs_T.D = diffusivity_vs_T.D * 1e-5 * 1e-4
+    diffusivity_vs_T.Temperature = diffusivity_vs_T.Temperature + T_freezing
+    DvsT = np.poly1d(np.polyfit(diffusivity_vs_T.Temperature,
+                                diffusivity_vs_T.D,
+                                2))
+    ax1.scatter(diffusivity_vs_T.Temperature, diffusivity_vs_T.D/1e-12, s = 4, color = "k")
+    ax1.plot(trange, DvsT(trange)/1e-12, lw = 2, color = "r")
+
+    #plot settings
+    ax0.set_ylabel("D$_{NaCl}$ µm$^2$s$^{-1}$")
+    ax0.set_xlabel("MFS")
+    ax0.set_xlim(0,1)
+    ax1.set_xlabel("T / K")
+
+    plt.show()
+
+    #combining the fits into a 2D function
+    def Diffusion_NaCl(mfs, Temp, T_ref = 298.15):
+        """
+        Function to calculated D for Nacl in water as function of T & MFS.
+        """
+        T_modification = DvsT(Temp) / DvsT(T_ref)
+        return DvsMFS(mfs) * T_modification
+
+    MFSX, TY = np.meshgrid(mfsrange, trange)
+    DZ = Diffusion_NaCl(MFSX, TY)
+
+    #plot to check it looks sensible
+    fig = plt.figure(figsize=(21,13), )
+    ax = fig.gca(projection='3d')
+    #ax.view_init(30, 43)
+
+    #color mapping
+    colour_ticks = 500
+    cmap = mpl.cm.jet
+    boundaries = np.arange(myround_down(DZ.min() / 1e-12, colour_ticks),
+                           myround_up(DZ.max() / 1e-12, colour_ticks),
+                           colour_ticks)
+    norm = mpl.colors.BoundaryNorm(boundaries=boundaries, ncolors=256)
+    stride = 1
+
+    #plot reference line from Gregson & Robinson
+    ax.plot3D(mfsrange, np.full_like(mfsrange, 298.15), Diffusion_NaCl(mfsrange, 298.15) / 1e-12,
+              ls = "--", color= "k")
+
+    ax.plot_surface(MFSX, TY, DZ / 1e-12,
+                    cmap = cmap, norm = norm, alpha = 0.5,
+                    cstride = stride, rstride = stride)
+    ax.contour(MFSX, TY, DZ / 1e-12, cmap = cmap, norm = norm, stride = stride, levels = boundaries)
+
+    labelpad = 50
+    ax.set_zlabel("D$_{NaCl}$ µm$^2$s$^{-1}$", labelpad = labelpad)
+    ax.set_xlabel("MFS", labelpad = labelpad)
+    ax.set_ylabel("T/ K", labelpad = labelpad)
+
+    plt.show()
+
+
+    #############
+
+    rolling_window = 7
+    colours = ['#E69F00',  '#56B4E9', '#009E73', '#F0E442', '#0072B2', '#D55E00', '#CC79A7']
+
+    linewidth = 3
+
+    def Peclet_Number(k, D):
+        return k/(8 * D)
+
+    fig, (ax0, ax1, ax2) = plt.subplots(nrows = 3, sharex = True,)
+    plt.subplots_adjust(hspace = 0)
+
+    peak_Pe_list = []
+    for result, RH, simulation, R0, colour in zip(NaCl_data, NaCl_data_RHs, NaCl_simulations, NaCl_R0s, colours):
+
+        #calculating key quatities
+        simulation["evaporation_rate"] = - 4 * np.gradient((simulation.radius / 1e-6) ** 2, simulation.time)  * 1e-12
+        simulation["diffusion_coefficient"] = Diffusion_NaCl(simulation.mass_fraction_solute, simulation.temperature)
+        simulation["peclet_number"] = Peclet_Number(simulation.evaporation_rate, simulation.diffusion_coefficient)
+        try:
+            critical_time_point = simulation.time[simulation.peclet_number >= 1].iloc[0]
+        except:
+            critical_time_point = simulation.time.max()
+        #plotting evaporation rate
+        ax0.plot((simulation.time[simulation.time < critical_time_point])/ R0[0] ** 2 / 1e12,
+                 (simulation.evaporation_rate[simulation.time < critical_time_point]) / 1e-12, ls = '-', lw = linewidth, color = colour, label = str(round(100 * RH)) + ' % RH',)
+        ax0.plot((simulation.time[simulation.time >= critical_time_point])/ R0[0] ** 2 / 1e12,
+                 (simulation.evaporation_rate[simulation.time >= critical_time_point]) / 1e-12, ls = ':', lw = linewidth, color = colour)
+        #experimental data
+        exp_data = result['all'].rolling(rolling_window, center = True,).mean()
+        exp_err = result['all'].rolling(rolling_window, center = True).std()
+        exp_data = exp_data[exp_data.Time_s > 0.1]
+        exp_err = exp_err[exp_err.Time_s > 0.1]
+        ax0.scatter(exp_data.Time_s / R0[0] ** 2 / 1e12,
+                   - 4 * np.gradient((exp_data.d_e_um_mean/2) ** 2, exp_data.Time_s),
+                   color = colour, s = 2, marker = 'o', zorder = 0)
+        ax0.fill_between(exp_data.Time_s / R0[0] ** 2 / 1e12,
+                        - 4 * np.gradient(((exp_data.d_e_um_mean + exp_data.d_e_um_std)/2) ** 2, exp_data.Time_s),
+                        - 4 * np.gradient(((exp_data.d_e_um_mean - exp_data.d_e_um_std)/2) ** 2, exp_data.Time_s),
+                        color = colour, alpha = 0.1, zorder = 0)
+
+        #plottting D
+        ax1.plot((simulation.time[simulation.time < critical_time_point])/ R0[0] ** 2 / 1e12,
+                 (simulation.diffusion_coefficient[simulation.time < critical_time_point]) / 1e-12, ls = '-', lw = linewidth, color = colour)
+        ax1.plot((simulation.time[simulation.time >= critical_time_point])/ R0[0] ** 2 / 1e12,
+                 (simulation.diffusion_coefficient[simulation.time >= critical_time_point]) / 1e-12, ls = ':', lw = linewidth, color = colour)
+
+        #plotting Pe
+        ax2.plot((simulation.time[simulation.time < critical_time_point])/ R0[0] ** 2 / 1e12,
+                 (simulation.peclet_number[simulation.time < critical_time_point]), ls = '-', lw = linewidth, color = colour,)
+        ax2.plot((simulation.time[simulation.time >= critical_time_point])/ R0[0] ** 2 / 1e12,
+                 (simulation.peclet_number[simulation.time >= critical_time_point]), ls = ':', lw = linewidth, color = colour)
+        peak_Pe_list.append([simulation.peclet_number.max(), np.array(simulation.time)[np.array(simulation.peclet_number) == simulation.peclet_number.max()][0]/R0[0] ** 2 / 1e12, RH])
+
+    peak_Pe_list = pd.DataFrame(peak_Pe_list, columns = ["Pe_max", "time_Pe_max", "RH"])
+    ax2.plot(peak_Pe_list.time_Pe_max[1:], peak_Pe_list.Pe_max[1:], color = "k", ls = ":")
+
+    # k plot settings
+    ax0.set_ylim(0,1.5e3)
+    ax0.set_ylabel("$\kappa$ / µm$^2$s$^{-1}$")
+    ax0.legend()
+
+    # D plot settings
+    ax1.set_ylim(0,1e3)
+    ax1.set_ylabel("D$_{NaCl} $/ µm$^2$s$^{-1}$")
+
+    # Pe plot settings
+    ax2.axhline(1, lw = 0.5, color = "k")
+    ax2.set_ylim(0,200)
+    ax2.set_xlim(0, 0.008)
+    ax2.set_yscale("symlog")
+    ax2.set_ylabel("Péclet Number")
+    ax2.set_xlabel("Time / s")
+
+
+    plt.show()
+
+    plt.plot(peak_Pe_list.RH * 100, peak_Pe_list.Pe_max, lw = linewidth, ls = "-", color = "r")
+    plt.axhline(1, color = "k")
+    plt.ylim(0,10)
+    plt.xlim(0,40)
+    plt.ylabel("Peak Péclet Number")
+    plt.xlabel("RH / %")
+    plt.show()
