@@ -357,7 +357,7 @@ class UniformDroplet:
         buoyancy = 1 - rho_g/rho_p
         acceleration = buoyancy*g
 
-        C = self.drag_coefficient * self.cunningham_slip_correction
+        C = self.drag_coefficient / self.cunningham_slip_correction
         if np.isfinite(C):
             acceleration -= 3*C*rho_g * self.relative_speed * self.relative_velocity / (8*rho_p*self.radius)
 
