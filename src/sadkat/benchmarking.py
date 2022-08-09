@@ -707,27 +707,46 @@ if __name__ == '__main__':
 
         colour_ticks = 25
         cmap = mpl.cm.jet
-        boundaries = np.arange(myround_down(k_data.T.min(), colour_ticks),myround_up(k_data.T.max(), colour_ticks),colour_ticks)
+        boundaries = np.arange(myround_down(k_data.T.min(), colour_ticks),
+                               myround_up(k_data.T.max(), colour_ticks),
+                               colour_ticks)
         norm = mpl.colors.BoundaryNorm(boundaries=boundaries, ncolors=256)
+        stride = 2
+
+        from scipy import interpolate
+        f = interpolate.interp2d(T_mesh, RH_mesh, k_data, kind='linear')
+        T_interpolate = np.linspace(T_range.min(), T_range.max(), 1000)
+        RH_interpolate = np.linspace(RH_range.min()*100, RH_range.max()*100, 1000)
+        T_int, RH_int = np.meshgrid(T_interpolate, RH_interpolate)
+        k_interpolated = f(T_interpolate, RH_interpolate)
 
         #3d plot of evaporation rate over temperature and rh
-        fig = plt.figure(figsize=(21,13), )
+        fig = plt.figure(figsize=(21,13), dpi = resolution)
         ax = fig.gca(projection='3d')
 
         #surface of data
-        ax.plot_surface(T_mesh, RH_mesh, k_data, alpha = 0.2, cmap = cmap, zorder = 0)
-        #white contours to show levels
-        ax.contour(T_mesh, RH_mesh, k_data, linewidths = 2, colors = 'w', levels = boundaries)
-        #ax.contour(X, Y, Z, zdir='z', offset=-100, cmap=cm.coolwarm)
-        #ax.contour(T_mesh, RH_mesh, k_data, zdir = 'x', offset = T.max(), linewidths = 2, cmap = cmap,)# levels = boundaries)
-        #ax.contour(T_mesh, RH_mesh, k_data, zdir = 'y', offset = 0, linewidths = 2, cmap = cmap,)# levels = boundaries)
-        #ax.contour(T_mesh, RH_mesh, k_data, zdir = 'z', offset = -10, linewidths = 2, cmap = cmap, levels = boundaries)
-        #scatter data
-        #for i, Temp in enumerate(T):
-        #    ax.scatter(Temp, RH, k_data.T[i], alpha = 0.9, c = k_data.T[i], cmap = cmap, norm=norm)
+        #ax.plot_surface(T_mesh, RH_mesh, k_data,
+        #                alpha = 0.2,
+        #                rstride=stride, cstride=stride,
+        #                cmap = cmap,
+        #                norm = norm,
+        #                zorder = 0)
 
+        #plot interpolated data
+        ax.plot_surface(T_int, RH_int, k_interpolated,
+                        alpha = 0.2,
+                        rstride=stride, cstride=stride,
+                        cmap = cmap,
+                        norm = norm,
+                        zorder = 0)
 
-        #ax.contour(T_mesh, RH_mesh, k_data, linewidths = 2, levels = np.arange(myround_down(k_data.T.min(), colour_ticks),myround_up(k_data.T.max(), colour_ticks),colour_ticks), cmap = cmap, norm = norm, zorder = 0)
+        #contours to show levels
+        ax.contour(T_mesh, RH_mesh, k_data,
+                   linewidths = 2,
+                   cmap = cmap,
+                   norm = norm,
+                   levels = boundaries,
+                   alpha = 0.2)
 
         #fitted surface
         if fit_k_surface != False:
@@ -738,7 +757,6 @@ if __name__ == '__main__':
 
         if isinstance(experiment_T, np.ndarray):
                 if isinstance(sadkat_experiment_data, np.ndarray):
-
                     #experiemental temperatures, model data
                     for i, (temp, style) in enumerate(zip(experiment_T, ls_list)):
                         ax.plot(np.full_like(RH,temp), Rh_convert_to_percent * RH, sadkat_experiment_data.T[i],
@@ -747,35 +765,8 @@ if __name__ == '__main__':
 
         if isinstance(experiment_T, np.ndarray):
                 if isinstance(experiment_data, dict):
-
                     #plotting experimental data
-
                     for i, (key) in enumerate(experiment_data):
-                        #plotting errors
-                        #temperature uncertainty
-                        #ax.plot(xs = [experiment_data[key]['exp_props']['T'][0] + T_freezing - 0.5,
-                        #              experiment_data[key]['exp_props']['T'][0] + T_freezing + 0.5],
-                        #            ys = [experiment_data[key]['exp_props']['RH'].mean(),
-                        #                  experiment_data[key]['exp_props']['RH'].mean()],
-                        #            zs = [(experiment_data[key]['exp_props']['k'].mean()) * 1e12,
-                        #                  (experiment_data[key]['exp_props']['k'].mean()) * 1e12],
-                        #        color = 'k')
-                        # RH std dev
-                        #ax.plot(xs = [experiment_data[key]['exp_props']['T'][0] + T_freezing,
-                        #              experiment_data[key]['exp_props']['T'][0] + T_freezing],
-                        #            ys = [experiment_data[key]['exp_props']['RH'].mean() - experiment_data[key]['exp_props']['RH'].std(),
-                        #                  experiment_data[key]['exp_props']['RH'].mean() + experiment_data[key]['exp_props']['RH'].std()],
-                        #            zs = [(experiment_data[key]['exp_props']['k'].mean()) * 1e12,
-                        #                  (experiment_data[key]['exp_props']['k'].mean()) * 1e12],
-                        #        color = 'k')
-                        # k std dev
-                        #ax.plot(xs = [experiment_data[key]['exp_props']['T'][0] + T_freezing,
-                        #              experiment_data[key]['exp_props']['T'][0] + T_freezing],
-                        #            ys = [experiment_data[key]['exp_props']['RH'].mean(),
-                        #                  experiment_data[key]['exp_props']['RH'].mean()],
-                        #            zs = [(experiment_data[key]['exp_props']['k'].mean() - experiment_data[key]['exp_props']['k'].std()) * 1e12,
-                        #                  (experiment_data[key]['exp_props']['k'].mean() + experiment_data[key]['exp_props']['k'].std()) * 1e12],
-                        #        color = 'k')
                         #plotting data
                         ax.scatter(xs = experiment_data[key]['exp_props']['T'][0] + T_freezing,
                                     ys = experiment_data[key]['exp_props']['RH'].mean() * Rh_convert_to_percent,
@@ -802,54 +793,43 @@ if __name__ == '__main__':
 
         plt.show()
 
-        ### Contour plot
-
-        fig, ax = plt.subplots()
-        colour_ticks = 25
-        cmap = mpl.cm.jet
-        boundaries = np.arange(myround_down(k_data.T.min(), colour_ticks),myround_up(k_data.T.max() + colour_ticks, colour_ticks),colour_ticks)
-        norm = mpl.colors.BoundaryNorm(boundaries=boundaries, ncolors=256)
-        ax.contourf(T, RH * 100, k_data, levels = boundaries, cmap = cmap, norm = norm)
-        CS = ax.contour(T, RH * 100, k_data, linewidths = 2, linestyles = '-', levels = boundaries, colors = 'k')
-        ax.clabel(CS, levels = boundaries, inline = True, inline_spacing = 50, fmt = '%1.0f')
-        if isinstance(experiment_T, np.ndarray):
-                if isinstance(experiment_data, dict):
-
-                    #plotting experimental data
-                    for i, key, in enumerate(experiment_data):
-                        ax.scatter(x = experiment_data[key]['exp_props']['T'][0] + T_freezing,
-                                   y = experiment_data[key]['exp_props']['RH'].mean() * 100,
-                                   c = 'w',
-                                   cmap = cmap, norm = norm,
-                                   marker = 's', s = 130)
-                        ax.scatter(x = experiment_data[key]['exp_props']['T'][0] + T_freezing,
-                                   y = experiment_data[key]['exp_props']['RH'].mean() * 100,
-                                   c = experiment_data[key]['exp_props']['k'].mean() * 1e12,
-                                   cmap = cmap, norm = norm,
-                                   marker = 's', s = 100)
-
-        plt.colorbar(mpl.cm.ScalarMappable(norm,cmap), label = r'Evaporation Rate / µm$^2$s$^{-1}$')
-        ax.set_xlabel('T / K')
-        ax.set_ylabel('RH / %')
-        plt.show()
-
         ### Temperature supression
 
         if isinstance(delta_T_data, np.ndarray):
-
+            #colour map for temperature suppression
             cmap_RedBlue = colors.LinearSegmentedColormap.from_list("RedBlue",['r', 'b'])
-            temp_colour_ticks = 5
+            temp_colour_ticks = 2.5
             temp_boundaries = np.arange(delta_T_data.T.min(),delta_T_data.T.max(),temp_colour_ticks)
             temp_norm = mpl.colors.BoundaryNorm(boundaries=temp_boundaries, ncolors=256)
 
+            #2d interpolation to smoothe data
+            f = interpolate.interp2d(T_mesh, RH_mesh, delta_T_data, kind='linear')
+            T_drop_interpolated = f(T_interpolate, RH_interpolate)
+
             #3d plot of evaporation rate over temperature and rh
-            fig = plt.figure(figsize=(21,13), )
+            fig = plt.figure(figsize=(21,13), dpi = resolution)
             ax = fig.gca(projection='3d')
 
+            #plot interpolated data
+            ax.plot_surface(T_int, RH_int, T_drop_interpolated,
+                            alpha = 0.2,
+                            rstride=stride, cstride=stride,
+                            cmap = cmap_RedBlue,
+                            norm = temp_norm,
+                            zorder = 0)
+
+            #contours to show levels
+            ax.contour(T_mesh, RH_mesh, delta_T_data,
+                       linewidths = 2,
+                       cmap = cmap_RedBlue,
+                       norm = temp_norm,
+                       levels = temp_boundaries,
+                       alpha = 0.2)
+
             #white contours to show levels
-            ax.contour(T_mesh, RH_mesh, delta_T_data, linewidths = 2, colors = 'w', levels = temp_boundaries)
+            #ax.contour(T_mesh, RH_mesh, delta_T_data, linewidths = 2, colors = 'w', levels = temp_boundaries)
             #surface of data
-            ax.plot_surface(T_mesh, RH_mesh, delta_T_data, alpha = 0.3, cmap = cmap_RedBlue)
+            #ax.plot_surface(T_mesh, RH_mesh, delta_T_data, alpha = 0.3, cmap = cmap_RedBlue)
 
             #scatter data
             #for i, Temp in enumerate(T):
@@ -873,7 +853,7 @@ if __name__ == '__main__':
 
             residuals_max = myround_up(np.abs(residuals).max())
 
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize = figure_size, dpi = resolution)
 
             colour_ticks = 50
             cmap = mpl.cm.jet
@@ -1015,7 +995,7 @@ if __name__ == '__main__':
 
         ax1.scatter(df.time_s,
                     df.radius_um,
-                    s = 1, color = 'k', zorder = 1, label = 'All EDB data')
+                    s = 1, color = 'k', zorder = 1, label = 'EDB Data')
 
         ax1.set_xlabel('Time / s')
         ax1.set_ylabel('Radius / µm')
@@ -1051,7 +1031,7 @@ if __name__ == '__main__':
         #scattering EDB data
         ax2.scatter(df.time_s,
                     df.radius_um,
-                    s = 1, color = 'k', zorder = 1, label = 'All EDB data')
+                    s = 1, color = 'k', zorder = 1, label = 'EDB Data')
 
         ax2.set_ylim(df.loc[df.time_s <0.5].radius_um.min(),
                      df.loc[df.time_s <0.5].radius_um.max())
@@ -1202,7 +1182,7 @@ if __name__ == '__main__':
                 leg.legendHandles[1].set_color('orange')
             else:
                 yticks = axis_pair[1].yaxis.get_major_ticks()
-                yticks[5].label1.set_visible(False)
+                yticks[-1].label1.set_visible(False)
 
             if i == len(exp_data) - 1:
                 axis_pair[0].set_xlabel('Horizontal Position / mm')
@@ -1288,7 +1268,7 @@ if __name__ == '__main__':
                 leg.legendHandles[1].set_color('orange')
             else:
                 yticks = axis_pair[1].yaxis.get_major_ticks()
-                yticks[5].label1.set_visible(False)
+                yticks[-1].label1.set_visible(False)
 
             if i == len(exp_data) - 1:
                 axis_pair[0].set_xlabel('Horizontal Position / mm')
@@ -2274,6 +2254,7 @@ if __name__ == '__main__':
     ax0.set_xlabel("MFS")
     ax0.set_xlim(0,1)
     ax1.set_xlabel("T / K")
+    ax1.set_xlim(trange.min(),trange.max())
 
     plt.show()
 
@@ -2392,7 +2373,7 @@ if __name__ == '__main__':
     ax2.set_xlim(0, 0.008)
     ax2.set_yscale("symlog")
     ax2.set_ylabel("Péclet Number")
-    ax2.set_xlabel("Time / s")
+    ax2.set_xlabel("(t / R$_0^2$) / (s/µm$^2$)")
 
 
     plt.show()
@@ -2404,4 +2385,4 @@ if __name__ == '__main__':
     plt.ylabel("Peak Péclet Number")
     plt.xlabel("RH / %")
     plt.show()
-    
+

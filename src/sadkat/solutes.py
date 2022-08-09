@@ -245,7 +245,7 @@ aqueous_NaCl = Solution(Water, 58.44, 2, 0.3, 2170,
 
 aqueous_NaCl_a_ideal = Solution(Water, 58.44, 2, 0.3, 2170,
                                 DensityVsMassFractionFit([998.2 , -55.33776, 1326.69542, -2131.05669, 2895.88613, -940.62808]),
-                                )
+                                ActivityVsMfsParameterisation(np.flipud([48.5226539, -158.04388699, 186.59427048, -93.88696437, 19.28939256, -2.99894206, -0.47652352, 1.])))
 
 aqueous_NaCl_d_linear = Solution(Water, 58.44, 2, 0.3, 2170,
                                  DensityVsMassFractionFit([998.2 ,1162]),
@@ -295,7 +295,7 @@ for label, solution in all_solutions.items():
 
 if __name__ == '__main__':
 
-    from src.sadkat.eaim import aqueous_NaCl_data as NaCl_data
+    from src.sadkat.eaim import aqueous_NaCl_data as NaCl_data_EAIM
 
     mfs = np.linspace(0, 1, 100)
     fig, (ax1, ax2) = plt.subplots(ncols=2)
@@ -304,7 +304,7 @@ if __name__ == '__main__':
     additive_solute = all_solutions_volume_additivity[label]
 
     pl1, = ax1.plot(mfs, aqueous_NaCl.density(mfs), zorder=0, label='Fit')
-    pl2, = ax1.plot(NaCl_data.mass_fraction_solute, 1000 * NaCl_data.Density, '.', label='E-AIM')
+    pl2, = ax1.plot(NaCl_data_EAIM.mass_fraction_solute, 1000 * NaCl_data_EAIM.Density, '.', label='E-AIM')
 
     ax1.set_xlabel('MFS')
     ax1.set_ylabel('density (kg/m$^3$)')
@@ -313,7 +313,7 @@ if __name__ == '__main__':
     aw = np.linspace(0, 1, 100)
 
     ax2.plot(mfs, aqueous_NaCl.solvent_activity(mfs), c=pl1.get_color(), zorder=0, label='Fit')
-    ax2.plot(NaCl_data.mass_fraction_solute, NaCl_data.solvent_activity, '.', c=pl2.get_color(), label='E-AIM')
+    ax2.plot(NaCl_data_EAIM.mass_fraction_solute, NaCl_data_EAIM.solvent_activity, '.', c=pl2.get_color(), label='E-AIM')
 
     ax2.set_xlabel('MFS')
     ax2.set_ylabel('solvent activity')
