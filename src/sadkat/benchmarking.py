@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # # 5. Benchmarking
 
 # ## 5.1. Kulmala and Su
