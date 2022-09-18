@@ -15,6 +15,7 @@ This package implements a widely used theoretical model for aerosol drying descr
 * Walker, J. S. _et al_, "Accurate Representations of the Microphysical Processes Occurring
 during the Transport of Exhaled Aerosols and Droplets", ACS Cent. Sci.(7), 200-209 (2021). DOI: [10.1021/acscentsci.0c01522](https://doi.org/10.1021/acscentsci.0c01522).
 
+We tried to make usage by the end-user as simple as possible, so the end product is a [jupyter notebook](https://jupyter.org/). However, to allow for legible revision code the jupyter notebook is generated from an underlying plain-text python code. This means that the full library can still be installed and imported as regular python modules. The notebooks are generated from the source files using [jupytext](https://jupytext.readthedocs.io/).
 
 Authors:
 * Joshua Robinson ([joshua.robinson@bristol.ac.uk](mailto:joshua.robinson@bristol.ac.uk))
