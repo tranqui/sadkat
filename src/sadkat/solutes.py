@@ -295,7 +295,7 @@ for label, solution in all_solutions.items():
 
 if __name__ == '__main__':
 
-    from src.sadkat.eaim import aqueous_NaCl_data as NaCl_data_EAIM
+    from sadkat.eaim import aqueous_NaCl_data as NaCl_data_EAIM
 
     mfs = np.linspace(0, 1, 100)
     fig, (ax1, ax2) = plt.subplots(ncols=2)
