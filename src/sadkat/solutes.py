@@ -356,7 +356,7 @@ if __name__ == '__main__':
     additive_solute = all_solutions_volume_additivity[label]
 
     pl1, = ax1.plot(mfs, aqueous_NaCl.density(mfs), zorder=0, label='E-AIM Fit')
-    pl2, = ax1.plot(NaCl_data.mass_fraction_solute, 1000 * NaCl_data.Density, '.', label='E-AIM Data')
+    pl2, = ax1.plot(NaCl_data_EAIM.mass_fraction_solute, 1000 * NaCl_data_EAIM.Density, '.', label='E-AIM Data')
 
     pl3, = ax1.plot(mfs, aqueous_NaCl_d_linear.density(mfs), ls='--', zorder=0, label='Linear in $\sqrt{MFS}$')
     pl4, = ax1.plot(mfs, aqueous_NaCl_d_half.density(mfs), ls='-.', zorder=0, label=r'$\frac{1}{2}$ $\times$ E-AIM Fit')
@@ -368,7 +368,7 @@ if __name__ == '__main__':
     aw = np.linspace(0, 1, 100)
 
     ax2.plot(mfs, aqueous_NaCl.solvent_activity(mfs), c=pl1.get_color(), zorder=0, label='E-AIM Fit')
-    ax2.plot(NaCl_data.mass_fraction_solute, NaCl_data.solvent_activity, '.', c=pl2.get_color(), label='E-AIM Data')
+    ax2.plot(NaCl_data_EAIM.mass_fraction_solute, NaCl_data_EAIM.solvent_activity, '.', c=pl2.get_color(), label='E-AIM Data')
 
     ax2.plot(mfs, aqueous_NaCl_a_ideal.solvent_activity(mfs), ls='--', c='r', zorder=0, label="Raoult's Law")
 
