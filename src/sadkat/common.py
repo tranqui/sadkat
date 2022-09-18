@@ -32,3 +32,12 @@ molar_mass_dry_air = 28.9647                # g/mol
 
 gravitational_acceleration = 9.80665        # m/s^2
 # -
+
+# +
+from IPython import get_ipython
+running_as_jupyter_notebook = 'zmqshell' in str(type(get_ipython()))
+if running_as_jupyter_notebook:
+    # Style settings to make figures legible in Jupyter notebook
+    plt.style.use('default')                # override any previous changes (from e.g. user's matplotlibrc file)
+    plt.style.use('notebookStyle.mplstyle') # apply new settings
+# -

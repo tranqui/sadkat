@@ -1,0 +1,22 @@
+lines.markersize:       2
+
+font.family:            serif
+font.size:              50
+
+axes.labelsize:         35
+axes.linewidth:         1.2
+axes.labelpad:          10
+axes.spines.top:        False
+axes.spines.right:      False
+
+legend.fontsize:        35
+
+xtick.labelsize:        50
+ytick.labelsize:        50
+xtick.direction:        in
+ytick.direction:        in
+xtick.major.pad:        20
+ytick.major.pad:        20
+
+figure.figsize:         16.1803398875, 10
+figure.dpi:             300
