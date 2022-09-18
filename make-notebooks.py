@@ -40,7 +40,7 @@ class Notebook:
         # Remove any cells we have been instructed to ignore in the source files.
         if not include_ignored:
             self.notebook.cells = list(filter(lambda cell: 'ignore' not in cell.metadata or
-                                              cell.metadata['ignore'] == False, self.notebook.cells))
+                                              cell.metadata['ignore'] == 'False', self.notebook.cells))
 
         self.markdown = []
 
