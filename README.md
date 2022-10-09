@@ -15,6 +15,8 @@ This package implements a widely used theoretical model for aerosol drying descr
 * Walker, J. S. _et al_, "Accurate Representations of the Microphysical Processes Occurring
 during the Transport of Exhaled Aerosols and Droplets", ACS Cent. Sci.(7), 200-209 (2021). DOI: [10.1021/acscentsci.0c01522](https://doi.org/10.1021/acscentsci.0c01522).
 
+We tried to make usage by the end-user as simple as possible, so the end product is a [jupyter notebook](https://jupyter.org/). However, to allow for legible revision code the jupyter notebook is generated from an underlying plain-text python code. This means that the full library can still be installed and imported as regular python modules. The notebooks are generated from the source files using [jupytext](https://jupytext.readthedocs.io/).
+
 Authors:
 * Joshua Robinson ([joshua.robinson@bristol.ac.uk](mailto:joshua.robinson@bristol.ac.uk))
 * Dan Hardy ([dan.hardy@bristol.ac.uk](mailto:dan.hardy@bristol.ac.uk))
@@ -27,15 +29,14 @@ Elements of the code were inspired by an earlier numerical model built by Jim Wa
 
 This software requires the following packages:
 
-* [python3](https://www.python.org/downloads/), and the following packages: [numpy](https://numpy.org/), [scipy](https://scipy.org/) and [matplotlib](https://matplotlib.org/)
-* [jupyter notebook](https://jupyter.org/)
-* [jupytext](https://jupytext.readthedocs.io/en/latest/install.html)
+* [python3](https://www.python.org/downloads/), and the following scientific packages: [numpy](https://numpy.org/), [scipy](https://scipy.org/), [matplotlib](https://matplotlib.org/), [pandas](https://pandas.pydata.org/) and [chemicals](https://chemicals.readthedocs.io/)
+* [jupyter notebook](https://jupyter.org/) and [jupytext](https://jupytext.readthedocs.io/en/latest/install.html) to generate the example notebooks
 
 Make sure these are installed before proceeding.
 
 If you have the python package manager [pip](https://pypi.org/project/pip/) installed, then you can install the prerequisite python libraries via:
 
-    pip install numpy scipy matplotlib jupytext
+    pip install numpy scipy matplotlib pandas chemicals jupytext
 
 on the command line. Note this command may require administrator privileges or you must pass the additional `--user` flag.
 Alternatively, these packages are frequently bundled with scientific distributions of python, e.g. [anaconda](https://www.anaconda.com/).
@@ -48,7 +49,13 @@ TBD.
 
 Inside the source directory run:
 
-    python make.py
+    pip install --user .
+
+to install for the user profile. To install system-wide run without the ``user`` flag (but you will probably need administrator priviliges e.g. via ``sudo``).
+
+To build the example notebooks run:
+
+    python make-notebooks.py
 
 This should generate a notebook `sadkat.ipynb` which can be opened from your browser after launching the jupyter notebook kernel. That is, run:
 
@@ -60,3 +67,4 @@ which should open a new window in your browser. You should then be able to selec
 ## How to use
 
 TBD.
+ 
