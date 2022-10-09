@@ -1,3 +1,5 @@
+![DOI](https://zenodo.org/badge/351456317.svg)](https://zenodo.org/badge/latestdoi/351456317)
+
 # SADKAT: single-aerosol drying kinetics and trajectories
 **A python package to model aerosol drying, brought to you by this cat's tears.**
 
