@@ -689,31 +689,71 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     def simulate(time,
-                 solution, ambient_temperature, ambient_RH,
-                 initial_radius, initial_temperature, initial_mfs,
-                 initial_velocity = np.zeros(3), # metres/second
-                 initial_position = np.zeros(3), # metres/second
-                 gravity = np.zeros(3),
-                 gas_velocity = np.zeros(3),
-                 rtol=1e-8,
-                 terminate_on_equilibration=True, equ_threshold=1e-4,
-                 terminate_on_efflorescence=False, eff_threshold=0.5):
+                solution, ambient_temperature, ambient_RH,
+                initial_radius, initial_temperature, initial_mfs,
+                initial_velocity = np.zeros(3), # metres/second
+                initial_position = np.zeros(3), # metres/second
+                gravity = np.zeros(3),
+                gas_velocity = np.zeros(3),
+                rtol=1e-8,
+                terminate_on_equilibration=True, equ_threshold=1e-4,
+                terminate_on_efflorescence=False, eff_threshold=0.5):
+        
+        """
+        Legacy function, use 'run_simulation' instead.
+        A function to run simulations with simplified inputs.
+        
+        """
 
         gas = Atmosphere(ambient_temperature, ambient_RH, velocity= gas_velocity)
         droplet = UniformDroplet.from_mfs(solution,
-                                          gas,
-                                          gravity,
-                                          initial_radius,
-                                          initial_mfs,
-                                          initial_temperature,
-                                          initial_velocity,
-                                          initial_position)
+                                        gas,
+                                        gravity,
+                                        initial_radius,
+                                        initial_mfs,
+                                        initial_temperature,
+                                        initial_velocity,
+                                        initial_position)
         trajectory = droplet.integrate(time, rtol=rtol,
-                                       terminate_on_equilibration=terminate_on_equilibration,
-                                       terminate_on_efflorescence=terminate_on_efflorescence,
-                                       equ_threshold=equ_threshold, eff_threshold=eff_threshold)
+                                    terminate_on_equilibration=terminate_on_equilibration,
+                                    terminate_on_efflorescence=terminate_on_efflorescence,
+                                    equ_threshold=equ_threshold, eff_threshold=eff_threshold)
 
         return droplet, trajectory
+
+    def run_simulation(time,
+                    solution, ambient_temperature, ambient_RH,
+                    initial_radius, initial_temperature, initial_mfs,
+                    initial_velocity = np.zeros(3), # metres/second
+                    initial_position = np.zeros(3), # metres/second
+                    gravity = np.array([0, 0, 9.80665]),
+                    gas_velocity = np.zeros(3),
+                    rtol=1e-8,
+                    terminate_on_equilibration=True, equ_threshold=1e-4,
+                    terminate_on_efflorescence=False, eff_threshold=0.5):
+        
+        """
+        
+        A function with simiplified inputs which outputs a pandas dataframe with the simulation results.
+        
+        """
+
+        gas = Atmosphere(ambient_temperature, ambient_RH, velocity= gas_velocity)
+        droplet = UniformDroplet.from_mfs(solution,
+                                        gas,
+                                        gravity,
+                                        initial_radius,
+                                        initial_mfs,
+                                        initial_temperature,
+                                        initial_velocity,
+                                        initial_position)
+        trajectory = droplet.integrate(time, rtol=rtol,
+                                    terminate_on_equilibration=terminate_on_equilibration,
+                                    terminate_on_efflorescence=terminate_on_efflorescence,
+                                    equ_threshold=equ_threshold, eff_threshold=eff_threshold)
+        
+        history = droplet.complete_trajectory(trajectory)
+        return history
 
 if __name__ == '__main__':
     solution = aqueous_NaCl
