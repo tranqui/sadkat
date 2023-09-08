@@ -3,7 +3,7 @@
 # ## 1.1. Importing modules
 
 # +
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit

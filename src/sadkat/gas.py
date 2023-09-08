@@ -11,15 +11,15 @@ from sadkat.solutes import *
 class Environment:
     """Class to conveniently store all parameters needed to describe the surrounding gas together."""
 
-    solvent: object
-    molar_mass: float               # g/mol
-    pressure: float                 # Pa
-    temperature: float              # K
-    relative_humidity: float        # unitless, bounded in [0,1]
-    specific_heat_capacity: float   # J/kg/K
-    thermal_conductivity: float     # J/s/m/K
-    dynamic_viscosity: float        # kg/m/s
-    velocity: np.array=np.zeros(3)  # m/s
+    solvent: object = field(default_factory=object)
+    molar_mass: float = field(default_factory=float)               # g/mol
+    pressure: float = field(default_factory=float)                 # Pa
+    temperature: float = field(default_factory=float)              # K
+    relative_humidity: float = field(default_factory=float)        # unitless, bounded in [0,1]
+    specific_heat_capacity: float = field(default_factory=float)   # J/kg/K
+    thermal_conductivity: float = field(default_factory=float)     # J/s/m/K
+    dynamic_viscosity: float = field(default_factory=float)        # kg/m/s
+    velocity: np.array = field(default_factory=np.zeros(3))        # m/s
 
     @property
     def density(self):

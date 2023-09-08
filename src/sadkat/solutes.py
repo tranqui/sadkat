@@ -121,15 +121,16 @@ if __name__ == '__main__':
 class Solution:
     """Class to conveniently store all parameters needed to describe a solute together."""
 
-    solvent: object
-    molar_mass_solute: float           # g/mol
-    num_ions: int                      # unitless
-    solubility_limit: float            # kg per kg solvent
-    solid_density: float               # kg/m^3
-    density: object                    # kg/m^3
-    solvent_activity_fit: object=None  # a fitting function for solvent activity (unitless) in
+    solvent: object = field(default_factory=object)
+    molar_mass_solute: float = field(default_factory=float)           # g/mol
+    num_ions: int = field(default_factory=int)                      # unitless
+    solubility_limit: float = field(default_factory=float)            # kg per kg solvent
+    solid_density: float = field(default_factory=float)               # kg/m^3
+    density: object = field(default_factory=object)                    # kg/m^3
+    solvent_activity_fit: object = None  # a fitting function for solvent activity (unitless) in
                                        # terms of the mass fraction of solute, or None (the
                                        # default) to assume Raoult's law for ideal mixtures
+
 
     def mole_fraction_solute(self, mass_fraction_solute):
         """Mole fraction from mass fraction."""

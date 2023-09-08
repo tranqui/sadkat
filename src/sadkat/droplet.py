@@ -15,14 +15,14 @@ class UniformDroplet:
     The solute is assumed to be distributed uniformly throughout the droplet.
     """
 
-    solution: object
-    environment: object
-    gravity: object                 # m/s^2
-    mass_solute: float              # kg
-    mass_solvent: float             # kg
-    temperature: float              # K
-    velocity: np.array=np.zeros(3)  # m/s
-    position: np.array=np.zeros(3)  # m
+    solution: object = field(default_factory=object)
+    environment: object = field(default_factory=object)
+    gravity: object = field(default_factory=object)                 # m/s^2
+    mass_solute: float = field(default_factory=object)              # kg
+    mass_solvent: float = field(default_factory=object)             # kg
+    temperature: float = field(default_factory=object)              # K
+    velocity: np.array = field(default_factory=np.zeros(3))  # m/s
+    position: np.array = field(default_factory=np.zeros(3))  # m
 
     @staticmethod
     def from_mfs(solution, environment, gravity,

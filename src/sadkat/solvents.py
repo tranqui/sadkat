@@ -13,13 +13,13 @@ from sadkat.common import *
 class Solvent:
     """Class to conveniently store all parameters needed to describe a solvent together."""
 
-    molar_mass: float                            # g/mol
-    density: object                              # kg/m^3
-    specific_heat_capacity: object               # J/kg/K
-    specific_latent_heat_vaporisation: object    # J/kg
-    equilibrium_vapour_pressure: object          # Pa
-    vapour_binary_diffusion_coefficient: object  # m^2/s
-    surface_tension : object                     # N/m
+    molar_mass: float = field(default_factory=float)                            # g/mol
+    density: object = field(default_factory=object)                              # kg/m^3
+    specific_heat_capacity: object = field(default_factory=object)               # J/kg/K
+    specific_latent_heat_vaporisation: object = field(default_factory=object)    # J/kg
+    equilibrium_vapour_pressure: object = field(default_factory=object)          # Pa
+    vapour_binary_diffusion_coefficient: object = field(default_factory=object)  # m^2/s
+    surface_tension : object = field(default_factory=object)                     # N/m
 
 @dataclass
 class VapourBinaryDiffusionCoefficient:
@@ -28,9 +28,9 @@ class VapourBinaryDiffusionCoefficient:
 
     The functional form of this is taken from Xie et al., Indoor Air (2007).
     """
-    D_ref: float   # m^2/s
-    T_ref: float   # K
-    lam: float     # unitless, scaling parameter
+    D_ref: float = field(default_factory=float)   # m^2/s
+    T_ref: float = field(default_factory=float)   # K
+    lam: float = field(default_factory=float)     # unitless, scaling parameter
 
     def __call__(self, T):
         """Fit itself.
